@@ -1,0 +1,1437 @@
+# 🐳 Docker Tutorial in Telugu — Session 1
+## Docker Basics, Installation, Commands & NGINX Practical Demo
+
+**Channel:** FreeCodes In Telugu  
+**Session:** 01 — Docker Fundamentals  
+**Level:** Beginner  
+**Topics:** Docker, Virtualization, Containerization, Docker Architecture, Images, Containers, Docker CLI, Port Mapping, NGINX
+
+---
+
+# PART 1: ENGLISH DOCUMENTATION
+
+## 1. Introduction to Docker
+
+Docker is a containerization platform that allows us to package applications and their dependencies into portable units called **containers**.
+
+These containers can run consistently across supported environments, such as a developer's laptop, a testing server, or a cloud server.
+
+### Why do we need Docker?
+
+Imagine an application works correctly on a developer's laptop but fails on a production server.
+
+Possible reasons include:
+
+- Different software versions
+- Missing dependencies
+- Different operating system configurations
+- Environment variable differences
+- Inconsistent application runtimes
+
+Docker helps reduce these problems by packaging the application and its required environment into an image.
+
+### Example
+
+Suppose an application requires:
+
+- Python 3.12
+- Application source code
+- Required Python packages
+- Configuration settings
+
+Docker can package the application files and required dependencies into an image so that the application can be deployed more consistently.
+
+**Important:** Docker helps make environments consistent, but it does not automatically guarantee that an application will work in every environment. Network access, configuration, secrets, permissions, and external services must also be handled correctly.
+
+---
+
+## 2. Virtualization vs Containerization
+
+### Virtualization
+
+Virtualization allows us to run multiple virtual machines on one physical computer using a hypervisor.
+
+Each virtual machine generally has its own guest operating system.
+
+**Architecture:**
+
+```text
+Physical Hardware
+       |
+   Hypervisor
+       |
+  +----+----+
+  |         |
+ VM 1      VM 2
+  |         |
+Guest OS  Guest OS
+  |         |
+ App A     App B
+```
+
+### Containerization
+
+Containerization allows applications to run in isolated environments while sharing the host operating system kernel.
+
+Docker containers typically use fewer resources than full virtual machines because they do not each require a separate guest operating system.
+
+**Simplified architecture:**
+
+```text
+Physical Hardware
+       |
+    Host OS
+       |
+ Docker Engine
+       |
+  +----+----+
+  |         |
+Container  Container
+  |         |
+ App A     App B
+```
+
+### Key differences
+
+| Feature | Virtual Machine | Container |
+|---|---|---|
+| Operating system | Separate guest OS | Shares host kernel |
+| Startup | Generally slower | Generally faster |
+| Resource usage | Generally higher | Generally lower |
+| Isolation | Virtual hardware and OS boundary | OS-level isolation |
+| Typical use | Full OS environments | Application workloads |
+
+**Important:** Containers are not simply lightweight virtual machines. They use operating-system-level isolation, and their security boundaries differ from those of virtual machines.
+
+---
+
+## 3. Why Docker Is Important in DevOps
+
+Docker is commonly used in modern DevOps workflows.
+
+Key benefits include:
+
+1. **Portability:** Package an application into an image and run it in supported environments.
+2. **Consistency:** Reduce differences between development, testing, and production.
+3. **Fast deployment:** Start application containers without booting a complete guest OS for each application.
+4. **Scalability:** Run multiple container instances when the application architecture supports it.
+5. **CI/CD integration:** Build, test, scan, and publish images through automated pipelines.
+6. **Versioning:** Use image tags to identify different image versions.
+
+### Typical DevOps workflow
+
+```text
+Developer writes code
+         |
+         v
+      Git Push
+         |
+         v
+    CI/CD Pipeline
+         |
+         v
+    Build Docker Image
+         |
+         v
+   Test and Scan Image
+         |
+         v
+   Push to Registry
+         |
+         v
+ Deploy to Environment
+```
+
+Docker is used alongside tools such as Git, Jenkins, GitHub Actions, GitLab CI/CD, Kubernetes, and cloud platforms.
+
+---
+
+## 4. Docker Architecture
+
+Docker uses a client-server architecture.
+
+### Docker Client
+
+The Docker CLI is the command-line interface we use to interact with Docker.
+
+Examples:
+
+```bash
+docker pull nginx
+docker images
+docker ps
+docker run nginx
+```
+
+### Docker Engine / Daemon
+
+The Docker daemon, `dockerd`, manages Docker objects such as containers, images, networks, and volumes.
+
+The Docker CLI communicates with the Docker Engine through its API.
+
+### Docker Image
+
+An image is a packaged template used to create containers.
+
+### Docker Container
+
+A container is an isolated runtime instance created from an image.
+
+### Docker Registry
+
+A registry stores and distributes Docker images.
+
+Docker Hub is a commonly used public image registry.
+
+### Docker architecture diagram
+
+```text
+       Docker CLI
+           |
+           v
+      Docker API
+           |
+           v
+      Docker Engine
+           |
+     +-----+------+
+     |     |      |
+  Images Containers Networks
+           |
+        Volumes
+
+ Registry <----> Image Pull / Push
+```
+
+**Remember:** The CLI sends requests, the Engine manages Docker resources, and a registry stores images.
+
+---
+
+## 5. Docker Image vs Docker Container
+
+An image and a container are related, but they are not the same thing.
+
+### Docker Image
+
+An image is a packaged template containing application files, dependencies, and configuration needed to create a container.
+
+Example:
+
+```bash
+docker pull nginx
+```
+
+This downloads the NGINX image if it is not already available locally.
+
+### Docker Container
+
+A container is a running or stopped instance created from an image.
+
+Example:
+
+```bash
+docker run -d --name web nginx
+```
+
+This creates and starts a container named `web` from the NGINX image.
+
+### Easy comparison
+
+```text
+Docker Image = Template
+Docker Container = Instance created from that template
+```
+
+One image can be used to create multiple containers.
+
+---
+
+## 6. Docker Image Tags
+
+Image tags help identify image versions or references.
+
+Examples:
+
+```text
+nginx:latest
+nginx:1.27
+nginx:1.26
+```
+
+In `nginx:1.27`:
+
+- `nginx` is the image name.
+- `1.27` is the tag.
+
+### Important note about `latest`
+
+`latest` is a tag, not a guarantee that the image is automatically updated.
+
+To retrieve an updated image, you must explicitly pull it:
+
+```bash
+docker pull nginx:latest
+```
+
+For production deployments, prefer deliberately selected and verified image versions rather than assuming that `latest` always points to the version you expect.
+
+---
+
+## 7. Install Docker on Windows
+
+On Windows, Docker Desktop is a common way to run Docker.
+
+### Installation steps
+
+1. Check that your Windows system meets the current Docker Desktop requirements.
+2. Enable and configure WSL 2 if required by your setup.
+3. Download Docker Desktop from the official website.
+4. Install Docker Desktop.
+5. Start Docker Desktop and wait until the Docker Engine is ready.
+6. Open PowerShell or Windows Terminal.
+
+Official resources:
+
+- Docker Desktop: https://docs.docker.com/desktop/setup/install/windows-install/
+- WSL installation: https://learn.microsoft.com/windows/wsl/install
+
+### Verify the installation
+
+Run these commands in PowerShell:
+
+```powershell
+docker --version
+```
+
+Displays the installed Docker CLI version.
+
+```powershell
+docker info
+```
+
+Displays information about the Docker client and Engine. If the Engine is unavailable, this command may report a connection error.
+
+```powershell
+docker run hello-world
+```
+
+Downloads the `hello-world` image if needed, creates a container, runs it, and prints a confirmation message when successful.
+
+---
+
+## 8. Install Docker on Amazon Linux 2023
+
+This section assumes that you have connected to an Amazon Linux 2023 EC2 instance and have permission to run administrative commands.
+
+### Step 1: Install Docker
+
+```bash
+sudo dnf install docker -y
+```
+
+Explanation:
+
+- `sudo` runs the command with administrative privileges.
+- `dnf` is the package manager used by Amazon Linux 2023.
+- `install docker` installs the Docker package.
+- `-y` automatically confirms package installation prompts.
+
+### Step 2: Enable and start Docker
+
+```bash
+sudo systemctl enable --now docker
+```
+
+Explanation:
+
+- `enable` configures Docker to start automatically at boot.
+- `--now` starts the service immediately.
+
+### Step 3: Check the service
+
+```bash
+sudo systemctl status docker
+```
+
+Look for an active service state such as `active (running)`.
+
+### Step 4: Verify the Docker version
+
+```bash
+sudo docker --version
+```
+
+### Step 5: Test Docker
+
+```bash
+sudo docker run hello-world
+```
+
+If the command succeeds, Docker can create and run a test container.
+
+**Note:** These commands use `sudo` for Docker operations on Amazon Linux. Do not add a user to the Docker group casually: Docker access can provide root-equivalent privileges on the host.
+
+Official documentation:
+
+https://docs.aws.amazon.com/linux/al2023/ug/docker.html
+
+---
+
+## 9. Essential Docker Image Commands
+
+### Download an image
+
+```bash
+docker pull nginx
+```
+
+Downloads the NGINX image from the configured registry.
+
+### List local images
+
+```bash
+docker images
+```
+
+Or:
+
+```bash
+docker image ls
+```
+
+Both display locally available images.
+
+### Inspect an image
+
+```bash
+docker image inspect nginx
+```
+
+Displays detailed metadata about the image.
+
+### Remember
+
+```text
+docker pull        = Download an image
+docker images      = List local images
+docker image inspect = Inspect image details
+```
+
+---
+
+## 10. Run Your First Docker Container
+
+### Run in the foreground
+
+```bash
+docker run nginx
+```
+
+Creates and starts a container from the NGINX image.
+
+The command remains attached to the foreground process, so the terminal is occupied while the container runs.
+
+Press `Ctrl+C` to interrupt the attached process.
+
+### Run in detached mode
+
+```bash
+docker run -d nginx
+```
+
+The `-d` option runs the container in the background and returns control to the terminal.
+
+### Assign a name
+
+```bash
+docker run -d --name web nginx
+```
+
+Explanation:
+
+- `docker run` creates and starts a container.
+- `-d` runs it in detached mode.
+- `--name web` assigns the name `web`.
+- `nginx` identifies the image.
+
+**Important:** If a container named `web` already exists, Docker cannot create another container with the same name. Remove or rename the existing container, or use another name.
+
+---
+
+## 11. List Docker Containers
+
+### Show running containers
+
+```bash
+docker ps
+```
+
+Displays containers that are currently running.
+
+### Show all containers
+
+```bash
+docker ps -a
+```
+
+Displays running and stopped containers.
+
+### Remember
+
+```text
+docker ps     = Running containers
+docker ps -a  = All containers, including stopped ones
+```
+
+---
+
+## 12. Start, Stop, and Restart Containers
+
+Assume the container name is `web`.
+
+### Stop a running container
+
+```bash
+docker stop web
+```
+
+Stops the container gracefully.
+
+### Start a stopped container
+
+```bash
+docker start web
+```
+
+Starts the existing container again.
+
+### Restart a container
+
+```bash
+docker restart web
+```
+
+Stops and starts the existing container.
+
+### Important distinction
+
+Stopping a container does not remove it.
+
+```text
+docker stop  = Stop the container
+docker start = Start the existing container
+docker rm    = Remove the container
+```
+
+---
+
+## 13. Docker Port Mapping
+
+A service running inside a container is not automatically available through a host port.
+
+Port publishing makes a container port accessible through a specified host port.
+
+### Port mapping syntax
+
+```text
+-p HOST_PORT:CONTAINER_PORT
+```
+
+### NGINX example
+
+```bash
+docker run -d --name web -p 8080:80 nginx
+```
+
+Explanation:
+
+- `8080` is the host port.
+- `80` is the port inside the container.
+- NGINX listens on port 80 in its default configuration.
+- Requests sent to host port 8080 are forwarded to container port 80.
+
+Open this URL in your browser:
+
+http://localhost:8080
+
+If the container is running and the port is available, the NGINX welcome page should appear.
+
+### Port mapping diagram
+
+```text
+Browser
+   |
+   v
+localhost:8080
+   |
+   v
+Host Port 8080
+   |
+   v
+Container Port 80
+   |
+   v
+NGINX Web Server
+```
+
+### Accessing a container on an EC2 instance
+
+If you are running Docker on an EC2 instance, `localhost` refers to the EC2 instance itself, not your personal computer.
+
+To access it remotely, you may need the instance's public IP or DNS name, appropriate security group rules, and an available host port.
+
+Do not expose services publicly unless you understand the security implications.
+
+---
+
+## 14. Docker Logs, Exec, and Inspect
+
+### View container logs
+
+```bash
+docker logs web
+```
+
+Displays the container's captured standard output and error streams.
+
+### Follow logs continuously
+
+```bash
+docker logs -f web
+```
+
+The `-f` option follows new log output.
+
+### Open a shell inside the container
+
+```bash
+docker exec -it web sh
+```
+
+Explanation:
+
+- `docker exec` runs a command in an existing running container.
+- `-i` keeps standard input open.
+- `-t` allocates a terminal.
+- `sh` starts a shell if it is available in the image.
+
+Type `exit` to leave the container shell.
+
+### Inspect container configuration
+
+```bash
+docker inspect web
+```
+
+Displays detailed container metadata, including configuration and network information.
+
+These commands are useful for debugging and troubleshooting.
+
+---
+
+## 15. Remove Docker Containers and Images
+
+### Step 1: Stop the container
+
+```bash
+docker stop web
+```
+
+### Step 2: Remove the container
+
+```bash
+docker rm web
+```
+
+### Step 3: Remove the image if no longer needed
+
+```bash
+docker rmi nginx
+```
+
+The image cannot be removed normally if it is still referenced by a container that uses it.
+
+### Remember
+
+```text
+docker rm  = Remove a container
+docker rmi = Remove an image
+```
+
+Be careful when removing resources, especially on shared or production systems.
+
+---
+
+## 16. Complete NGINX Practical Demo
+
+This lab demonstrates the main Docker concepts from the session.
+
+### Step 1: Pull the image
+
+```bash
+docker pull nginx
+```
+
+### Step 2: Create and start a named container
+
+```bash
+docker run -d --name web -p 8080:80 nginx
+```
+
+### Step 3: Verify the running container
+
+```bash
+docker ps
+```
+
+Expected result: a running container named `web` with host port `8080` mapped to container port `80`.
+
+### Step 4: Open the website
+
+Visit:
+
+http://localhost:8080
+
+Expected result: the NGINX welcome page.
+
+### Step 5: Check logs
+
+```bash
+docker logs web
+```
+
+### Step 6: Stop the container
+
+```bash
+docker stop web
+```
+
+### Step 7: Check container status
+
+```bash
+docker ps -a
+```
+
+The container should appear as stopped or exited.
+
+### Step 8: Start it again
+
+```bash
+docker start web
+```
+
+Refresh the browser to verify that NGINX is accessible again.
+
+### Step 9: Clean up the lab
+
+```bash
+docker stop web
+docker rm web
+docker rmi nginx
+```
+
+The image removal command may report that the image is in use if other containers still reference it. Check those containers before removing the image.
+
+**Amazon Linux note:** If you are using the default Docker permissions on Amazon Linux, prefix Docker commands with `sudo`.
+
+---
+
+## 17. Common Docker Troubleshooting
+
+### Problem 1: Cannot connect to Docker Engine
+
+On Windows:
+- Check that Docker Desktop is running.
+- Wait until the Engine has finished starting.
+- Run `docker info` again.
+
+On Amazon Linux:
+
+```bash
+sudo systemctl status docker
+```
+
+Start the service if it is stopped:
+
+```bash
+sudo systemctl start docker
+```
+
+### Problem 2: Port is already allocated
+
+If port 8080 is already being used, select another host port:
+
+```bash
+docker run -d --name web2 -p 8081:80 nginx
+```
+
+Open:
+
+http://localhost:8081
+
+### Problem 3: Container exited
+
+Check all containers:
+
+```bash
+docker ps -a
+```
+
+Inspect its logs:
+
+```bash
+docker logs web
+```
+
+A container can exit if its main process stops or encounters an error.
+
+### Problem 4: Container name already exists
+
+Check existing containers:
+
+```bash
+docker ps -a
+```
+
+Remove the old container only if you no longer need it:
+
+```bash
+docker rm web
+```
+
+Then run the new container.
+
+### Problem 5: Browser cannot open NGINX
+
+Check:
+
+1. Is the container running?
+2. Was the port published correctly?
+3. Is host port 8080 available?
+4. Are you using the correct URL?
+5. If using EC2, are the network and security group rules correct?
+
+---
+
+## 18. Important Security Notes
+
+- Do not store passwords, API keys, or other secrets directly in a Dockerfile or public GitHub repository.
+- Avoid exposing databases or administrative services to the public internet.
+- Use volumes when application data must persist beyond the lifetime of a container.
+- Choose and verify image versions deliberately.
+- Keep Docker and container images updated.
+- Apply least-privilege access to Docker and the host.
+- Scan images and follow your organization's security policies before deploying them.
+
+---
+
+## 19. Practice Assignment
+
+Complete these tasks on your own system.
+
+- [ ] Install Docker on Windows or Amazon Linux 2023.
+- [ ] Verify Docker with `docker --version`.
+- [ ] Run `docker run hello-world`.
+- [ ] Pull the NGINX image.
+- [ ] Run a container named `web` on host port 8080.
+- [ ] Open `http://localhost:8080`.
+- [ ] Check running containers with `docker ps`.
+- [ ] Check logs with `docker logs web`.
+- [ ] Stop and start the container.
+- [ ] Remove the container after completing the lab.
+
+### Assignment commands
+
+```bash
+docker pull nginx
+docker run -d --name web -p 8080:80 nginx
+docker ps
+docker logs web
+docker stop web
+docker start web
+docker stop web
+docker rm web
+```
+
+After removing the container, you can optionally remove the image:
+
+```bash
+docker rmi nginx
+```
+
+---
+
+## 20. Session 1 Summary
+
+| Command | Purpose |
+|---|---|
+| `docker --version` | Show Docker version |
+| `docker info` | Display Docker Engine information |
+| `docker pull nginx` | Download an image |
+| `docker images` | List local images |
+| `docker run` | Create and start a container |
+| `docker ps` | List running containers |
+| `docker ps -a` | List all containers |
+| `docker stop web` | Stop a container |
+| `docker start web` | Start an existing container |
+| `docker restart web` | Restart a container |
+| `docker logs web` | View container logs |
+| `docker exec -it web sh` | Open a shell inside a running container |
+| `docker inspect web` | Inspect container configuration |
+| `docker rm web` | Remove a container |
+| `docker rmi nginx` | Remove an image |
+
+### What comes next?
+
+**Session 2: Dockerfile and Custom Docker Images**
+
+Topics to explore next:
+
+- What is a Dockerfile?
+- Dockerfile instructions
+- Build context
+- `docker build`
+- `docker run` with a custom image
+- Build and run a simple website using Docker
+
+---
+
+# PART 2: TELUGISH EXPLANATION
+## Docker Session 1 — Easy Telugu + English
+
+## 1. Docker ante enti?
+
+Docker anedi application ni, daniki kavalsina dependencies tho kalipi package chesi run cheyadaniki use chese containerization platform.
+
+Simple ga cheppalante, application oka system lo work avuthundi, vere system lo problems vastayi. Ilanti environment differences ni tagginchadaniki Docker help chesthundi.
+
+Example ki, mana application ki Python 3.12 and konni libraries kavali anukundam. Docker image lo application files and required dependencies ni package cheyavachu.
+
+**Remember:** Docker use chesthe environment consistency improve avuthundi. Kani network, configuration, permissions, secrets lanti issues ni separate ga handle cheyyali.
+
+## 2. Virtualization vs Containerization
+
+### Virtual Machine ante enti?
+
+Virtualization lo physical machine meeda hypervisor untundi. Daani paina multiple Virtual Machines create cheyochu.
+
+Prathi VM ki generally separate Guest Operating System untundi.
+
+Example: Oka physical server lo Windows VM, Linux VM run cheyochu.
+
+### Containerization ante enti?
+
+Containerization lo applications isolated environments lo run avuthayi. Containers host operating system kernel ni share chesukuntayi.
+
+Anduke containers generally lightweight ga untayi, fast ga start avuthayi.
+
+Easy comparison:
+
+- VM = Separate guest OS tho virtual machine.
+- Container = Shared host kernel use chesthu isolated ga run ayye application environment.
+
+## 3. Docker enduku use chestham?
+
+Developer laptop lo application work avuthundi, kani production server lo fail avuthundi.
+
+Reasons:
+- Different software versions
+- Missing libraries
+- Different configurations
+- Runtime differences
+
+Docker application and required dependencies ni image ga package cheyadaniki help chesthundi.
+
+DevOps lo Docker ni CI/CD pipelines, testing, deployments, cloud environments lo use chestharu.
+
+## 4. Docker Architecture
+
+Docker lo main components:
+
+- **Docker CLI:** Manam commands type chese interface.
+- **Docker Engine:** Containers, images, networks, volumes ni manage chesthundi.
+- **Image:** Container create cheyadaniki template.
+- **Container:** Image nunchi create ayye runtime instance.
+- **Registry:** Images store and distribute cheyadaniki use chestharu.
+
+Example flow:
+
+```text
+Docker CLI
+    |
+    v
+Docker Engine
+    |
+    v
+Image --> Container
+```
+
+Docker Hub oka popular public image registry.
+
+## 5. Image vs Container
+
+Image ante template.
+
+Container ante aa template nunchi create chesina instance.
+
+Example:
+
+```bash
+docker pull nginx
+```
+
+Ee command NGINX image ni download chesthundi.
+
+```bash
+docker run -d --name web nginx
+```
+
+Ee command NGINX image nunchi `web` ane container create chesi start chesthundi.
+
+Oka image nunchi multiple containers create cheyochu.
+
+## 6. Image Tags
+
+Examples:
+
+```text
+nginx:latest
+nginx:1.27
+```
+
+`nginx` image name, `1.27` tag.
+
+`latest` kuda oka tag matrame. Local image automatic ga update avvadu.
+
+Image update kavali ante:
+
+```bash
+docker pull nginx:latest
+```
+
+Production lo image version ni carefully select cheskovali.
+
+## 7. Windows lo Docker Installation
+
+Windows lo Docker Desktop use cheyochu.
+
+Steps:
+
+1. System requirements check cheyyali.
+2. Required ayithe WSL 2 configure cheyyali.
+3. Docker Desktop install cheyyali.
+4. Docker Desktop start cheyyali.
+5. PowerShell open cheyyali.
+
+Verify cheyadaniki:
+
+```powershell
+docker --version
+docker info
+docker run hello-world
+```
+
+`hello-world` successful ga run ayithe Docker image pull chesi container run cheyagaluguthundani artham.
+
+## 8. Amazon Linux 2023 lo Docker Installation
+
+EC2 instance ki connect ayyi ee commands execute cheyyandi.
+
+### Docker install
+
+```bash
+sudo dnf install docker -y
+```
+
+Amazon Linux 2023 lo `dnf` package manager use chestham.
+
+### Docker service start and enable
+
+```bash
+sudo systemctl enable --now docker
+```
+
+Ee command Docker service ni immediate ga start chesthundi, reboot tarvatha automatic ga start ayyela enable chesthundi.
+
+### Service status check
+
+```bash
+sudo systemctl status docker
+```
+
+`active (running)` status kosam check cheyyandi.
+
+### Version check
+
+```bash
+sudo docker --version
+```
+
+### Test
+
+```bash
+sudo docker run hello-world
+```
+
+Amazon Linux lo default permissions use chesthunte Docker commands mundu `sudo` use cheyyandi.
+
+## 9. Important Image Commands
+
+```bash
+docker pull nginx
+```
+
+NGINX image download chesthundi.
+
+```bash
+docker images
+```
+
+Local images list chesthundi.
+
+```bash
+docker image inspect nginx
+```
+
+Image details chupisthundi.
+
+Remember:
+
+- `docker pull` = Image download.
+- `docker images` = Images list.
+- `docker ps` = Running containers list.
+
+## 10. First Container Run Cheddam
+
+### Foreground mode
+
+```bash
+docker run nginx
+```
+
+Container foreground lo run avuthundi. Terminal attached ga untundi.
+
+### Background mode
+
+```bash
+docker run -d nginx
+```
+
+`-d` ante detached mode. Container background lo run avuthundi.
+
+### Container ki name ivvadam
+
+```bash
+docker run -d --name web nginx
+```
+
+Ikkada `web` ane name container ki assign chesthunnam.
+
+Already `web` ane container unte same name tho another container create cheyyalem.
+
+## 11. Containers List Cheyadam
+
+```bash
+docker ps
+```
+
+Currently running containers matrame chupisthundi.
+
+```bash
+docker ps -a
+```
+
+Running and stopped containers anni chupisthundi.
+
+Easy trick:
+
+```text
+docker ps    = Running
+docker ps -a = All containers
+```
+
+## 12. Start, Stop, Restart
+
+```bash
+docker stop web
+```
+
+Running container ni stop chesthundi.
+
+```bash
+docker start web
+```
+
+Already existing stopped container ni start chesthundi.
+
+```bash
+docker restart web
+```
+
+Container ni restart chesthundi.
+
+**Important:** Stop chesthe container delete avvadu.
+
+- `stop` = Stop cheyadam.
+- `start` = Malli start cheyadam.
+- `rm` = Container remove cheyadam.
+
+## 13. Port Mapping
+
+Container lopala NGINX port 80 meeda listen chesthundi.
+
+Mana host machine nunchi browser lo access cheyadaniki port mapping use chestham.
+
+Syntax:
+
+```text
+-p HOST_PORT:CONTAINER_PORT
+```
+
+Command:
+
+```bash
+docker run -d --name web -p 8080:80 nginx
+```
+
+Explanation:
+
+- `8080` = Host port.
+- `80` = Container port.
+- `nginx` = Image name.
+
+Browser lo open cheyyandi:
+
+http://localhost:8080
+
+NGINX container running lo undi, port available ayithe welcome page kanipisthundi.
+
+## 14. Logs, Exec, Inspect
+
+### Logs chudali ante
+
+```bash
+docker logs web
+```
+
+Container output chudataniki use chestham.
+
+### Live logs
+
+```bash
+docker logs -f web
+```
+
+New logs vachinappudu continuously chupisthundi.
+
+### Container lopala shell open cheyadaniki
+
+```bash
+docker exec -it web sh
+```
+
+Container running lo undali, image lo `sh` available undali.
+
+Exit avvadaniki:
+
+```bash
+exit
+```
+
+### Container details
+
+```bash
+docker inspect web
+```
+
+Container configuration and network details chupisthundi.
+
+## 15. Container and Image Remove Cheyadam
+
+First container stop cheyyandi:
+
+```bash
+docker stop web
+```
+
+Container remove cheyyandi:
+
+```bash
+docker rm web
+```
+
+Image avasaram lekapothe remove cheyyandi:
+
+```bash
+docker rmi nginx
+```
+
+Remember:
+
+```text
+docker rm  = Container remove
+docker rmi = Image remove
+```
+
+Image ni vere containers use chesthunte removal fail avvachu.
+
+## 16. Complete NGINX Practical Demo
+
+### Step 1: Image pull
+
+```bash
+docker pull nginx
+```
+
+### Step 2: Container run
+
+```bash
+docker run -d --name web -p 8080:80 nginx
+```
+
+### Step 3: Container running lo unda check cheyyandi
+
+```bash
+docker ps
+```
+
+### Step 4: Browser open cheyyandi
+
+http://localhost:8080
+
+NGINX welcome page ravali.
+
+### Step 5: Logs check cheyyandi
+
+```bash
+docker logs web
+```
+
+### Step 6: Container stop cheyyandi
+
+```bash
+docker stop web
+```
+
+### Step 7: Container malli start cheyyandi
+
+```bash
+docker start web
+```
+
+Browser refresh chesi page malli open avuthundo check cheyyandi.
+
+### Step 8: Cleanup
+
+```bash
+docker stop web
+docker rm web
+docker rmi nginx
+```
+
+Amazon Linux lo Docker commands ki `sudo` prefix use cheyyandi.
+
+## 17. Common Troubleshooting
+
+### Docker service run avvatledu
+
+Amazon Linux lo:
+
+```bash
+sudo systemctl status docker
+```
+
+### Port already use avuthondi
+
+Another host port use cheyyandi:
+
+```bash
+docker run -d --name web2 -p 8081:80 nginx
+```
+
+Browser:
+
+http://localhost:8081
+
+### Container exit ayyindi
+
+```bash
+docker ps -a
+docker logs web
+```
+
+First container status check cheyyandi, tarvatha logs chudandi.
+
+### Container name already exists
+
+```bash
+docker ps -a
+```
+
+Old container avasaram lekapothe:
+
+```bash
+docker rm web
+```
+
+Production resources ni remove chese mundu careful ga verify cheyyandi.
+
+## 18. Security Important Points
+
+- Passwords and API keys ni public GitHub repository lo upload cheyyakandi.
+- Database ports ni public internet ki expose cheyyakandi.
+- Persistent data kosam Docker volumes use cheyyandi.
+- Image versions ni carefully select cheyyandi.
+- Production deployment mundu images scan cheyyandi.
+- Docker access ni trusted users ki matrame ivvandi.
+
+## 19. Practice Assignment
+
+Ee tasks complete cheyyandi:
+
+- [ ] Docker install cheyyandi.
+- [ ] `docker --version` run cheyyandi.
+- [ ] `docker run hello-world` execute cheyyandi.
+- [ ] NGINX image pull cheyyandi.
+- [ ] `web` ane container create cheyyandi.
+- [ ] Port 8080 map cheyyandi.
+- [ ] Browser lo NGINX page open cheyyandi.
+- [ ] Logs check cheyyandi.
+- [ ] Container stop and start cheyyandi.
+- [ ] Practice complete ayyaka container remove cheyyandi.
+
+## 20. Final Summary
+
+Docker Session 1 lo manam nerchukunna important commands:
+
+```bash
+docker --version
+docker info
+docker pull nginx
+docker images
+docker run -d --name web -p 8080:80 nginx
+docker ps
+docker ps -a
+docker logs web
+docker stop web
+docker start web
+docker restart web
+docker exec -it web sh
+docker inspect web
+docker rm web
+docker rmi nginx
+```
+
+**Next Session:** Dockerfile, Dockerfile instructions, build context, `docker build`, and creating custom Docker images.
+
+---
+
+## About This Repository
+
+This repository contains beginner-friendly Docker notes and practical commands for learners following the Docker series from **FreeCodes In Telugu**.
+
+The English section provides technical documentation, while the Telugish section helps Telugu-speaking learners understand the same concepts more easily.
+
+If you find these notes helpful, star the repository and share it with other learners.
+
+Happy Learning! 🚀
