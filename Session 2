@@ -1,0 +1,1292 @@
+# 🐳 Docker Series – Session 2: Container Commands & Docker Images
+
+**Channel:** FreeCodes In Telugu  
+**Level:** Beginner to Intermediate  
+**Topics:** Docker Container Management, Logs, Monitoring, Resource Limits, Docker Images, Image Layers, Tags, Optimization, and Security.
+
+---
+
+## 📌 Table of Contents
+
+### English
+1. Introduction to Docker
+2. Docker Container Management Commands
+3. Container Logs and Monitoring
+4. Container Resource Limits
+5. Useful Docker Commands
+6. Understanding Docker Images
+7. Docker Image Layers
+8. Docker Image Naming and Tags
+9. Docker Image Optimization
+10. Docker Image Security Best Practices
+11. Hands-on Practical: NGINX
+12. Troubleshooting Common Issues
+13. Interview Questions
+14. Conclusion
+
+### Telugu-English (Telugish)
+15. Docker Introduction
+16. Container Commands
+17. Logs and Monitoring
+18. Resource Limits
+19. Docker Images, Layers, and Tags
+20. Image Optimization and Security
+21. Practical Commands
+22. Interview Questions – Easy Explanation
+
+---
+
+# PART 1: ENGLISH EXPLANATION 🇬🇧
+
+## 1. Introduction to Docker
+
+Docker is a containerization platform that allows us to package an application and its dependencies into a standardized unit called a **container image**.
+
+A container is a running instance of an image.
+
+Docker helps developers and DevOps engineers run applications consistently across development, testing, and production environments.
+
+### Why do we use Docker?
+
+- Application portability
+- Faster application deployment
+- Consistent environments
+- Efficient resource utilization
+- Simplified application distribution
+- Easier scaling and CI/CD integration
+
+### Image vs Container
+
+| Docker Image | Docker Container |
+|---|---|
+| A packaged application template | A running or stopped instance of an image |
+| Used to create containers | Executes the application |
+| Typically immutable after creation | Has a writable container layer |
+| Can be stored in a registry | Can be started, stopped, and removed |
+
+**Example:** An NGINX image contains the files and configuration needed to run NGINX. When we run that image, Docker creates an NGINX container.
+
+---
+
+## 2. Docker Container Management Commands
+
+### 2.1 List Running Containers
+
+```bash
+docker ps
+```
+
+**Explanation:** Displays containers that are currently running.
+
+### 2.2 List All Containers
+
+```bash
+docker ps -a
+```
+
+**Explanation:** Displays running, stopped, and exited containers.
+
+### 2.3 Inspect a Container
+
+```bash
+docker inspect myapp
+```
+
+**Explanation:** Displays detailed information about a container, including its configuration, network settings, mounts, and runtime state.
+
+To display only the container IP address:
+
+```bash
+docker inspect --format='{{.NetworkSettings.IPAddress}}' myapp
+```
+
+### 2.4 Execute a Command Inside a Running Container
+
+```bash
+docker exec -it myapp /bin/sh
+```
+
+**Explanation:**
+- `docker exec` executes a command inside an existing running container.
+- `-i` keeps standard input open.
+- `-t` allocates a terminal.
+- `/bin/sh` starts a shell.
+
+Some images contain Bash, while minimal images may only include `sh`.
+
+If Bash is available:
+
+```bash
+docker exec -it myapp /bin/bash
+```
+
+Exit the container shell:
+
+```bash
+exit
+```
+
+**Important:** `exit` leaves the interactive shell. It is not a Docker CLI command.
+
+---
+
+## 3. Container Logs and Monitoring
+
+Logs help us investigate application errors, startup failures, and runtime problems.
+
+### 3.1 Display Container Logs
+
+```bash
+docker logs myapp
+```
+
+Shows the container's available standard output and standard error logs.
+
+### 3.2 Follow Logs in Real Time
+
+```bash
+docker logs -f myapp
+```
+
+Useful for watching application output while reproducing an issue.
+
+### 3.3 Display the Last 100 Lines
+
+```bash
+docker logs --tail 100 myapp
+```
+
+### 3.4 Follow Logs with Timestamps
+
+```bash
+docker logs -f --timestamps myapp
+```
+
+### 3.5 Monitor Container Resource Usage
+
+```bash
+docker stats
+```
+
+Displays live resource statistics for running containers, including CPU, memory, network I/O, and block I/O.
+
+Monitor a specific container:
+
+```bash
+docker stats myapp
+```
+
+### 3.6 View Docker Events
+
+```bash
+docker events
+```
+
+Displays Docker events such as container creation, start, stop, and destruction. Press `Ctrl+C` to stop following events.
+
+**Real-world use case:** If an application container unexpectedly stops, inspect its logs and state before restarting it.
+
+```bash
+docker ps -a
+docker logs myapp
+docker inspect myapp
+```
+
+---
+
+## 4. Docker Container Resource Limits
+
+Containers share the host operating system's kernel. Without appropriate controls, a container can consume more resources than intended.
+
+Docker supports CPU and memory constraints.
+
+### 4.1 Run a Container with Memory and CPU Limits
+
+```bash
+docker run -d \
+  --name myapp \
+  -p 8080:80 \
+  --memory=256m \
+  --cpus=1 \
+  nginx:latest
+```
+
+**Explanation:**
+
+| Option | Meaning |
+|---|---|
+| `-d` | Run in detached mode |
+| `--name myapp` | Assign a container name |
+| `-p 8080:80` | Map host port 8080 to container port 80 |
+| `--memory=256m` | Set a 256 MiB memory limit |
+| `--cpus=1` | Limit the container to one CPU's worth of processing capacity |
+| `nginx:latest` | Image used to create the container |
+
+Open the application at:
+
+```text
+http://localhost:8080
+```
+
+### 4.2 Verify the Memory Limit
+
+```bash
+docker inspect \
+  --format='{{.HostConfig.Memory}}' myapp
+```
+
+The value is returned in bytes. A limit of 256 MiB corresponds to `268435456` bytes.
+
+### 4.3 Verify the CPU Limit
+
+```bash
+docker inspect \
+  --format='{{.HostConfig.NanoCpus}}' myapp
+```
+
+A value of `1000000000` represents one CPU's worth of configured capacity.
+
+**Best practice:** Set resource limits based on application requirements, load testing, and observed metrics. A limit that is too low can cause performance problems or out-of-memory termination.
+
+---
+
+## 5. Useful Docker Commands
+
+### 5.1 Rename a Container
+
+```bash
+docker rename oldname newname
+```
+
+Example:
+
+```bash
+docker rename myapp webapp
+```
+
+Renames the container without rebuilding the image.
+
+### 5.2 Copy a File from a Container to the Host
+
+```bash
+docker cp myapp:/etc/hostname ./hostname.txt
+```
+
+Copies `/etc/hostname` from the container to the current host directory.
+
+### 5.3 Copy a File from the Host to a Container
+
+```bash
+docker cp ./index.html myapp:/usr/share/nginx/html/index.html
+```
+
+Copies the local `index.html` file into the container.
+
+**Remember:**
+
+- `docker cp container:path host-path` — container to host.
+- `docker cp host-path container:path` — host to container.
+
+### 5.4 Check the Container's Linux Distribution
+
+```bash
+docker exec myapp cat /etc/os-release
+```
+
+This displays distribution information for the container's user-space environment, if the file exists.
+
+**Important:** A standard Linux container shares the host's Linux kernel. It does not boot a separate guest kernel like a traditional virtual machine.
+
+---
+
+## 6. Understanding Docker Images
+
+A Docker image contains the filesystem and configuration needed to create a container.
+
+Images can be downloaded from registries, built from Dockerfiles, and shared with other environments.
+
+### 6.1 List Local Images
+
+```bash
+docker image ls
+```
+
+### 6.2 Download an Image
+
+```bash
+docker pull nginx:latest
+```
+
+Downloads the selected image from the default registry, Docker Hub, unless another registry is specified.
+
+### 6.3 Inspect an Image
+
+```bash
+docker image inspect nginx:latest
+```
+
+Shows image metadata, architecture, configuration, and other details.
+
+### 6.4 View Image History
+
+```bash
+docker image history nginx:latest
+```
+
+Displays the recorded image build history and associated layer information.
+
+### 6.5 Remove an Unused Image
+
+```bash
+docker image rm nginx:latest
+```
+
+Docker may reject the removal if the image is still referenced by a container.
+
+**Note:** Removing an image is different from removing a container. Check what depends on an image before deleting it.
+
+---
+
+## 7. Docker Image Layers
+
+Docker images are composed of filesystem layers. Many Dockerfile instructions create layers, while some instructions change image configuration rather than creating filesystem layers.
+
+Layers can be reused between images when the underlying layer content is identical.
+
+### Example Dockerfile
+
+```dockerfile
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+COPY index.html .
+
+EXPOSE 80
+```
+
+### How the build works
+
+1. `FROM` selects the base image.
+2. `WORKDIR` sets the working directory.
+3. `COPY` adds the website file.
+4. `EXPOSE` documents the intended container port.
+
+Docker can reuse cached build steps when the relevant instructions and input files have not changed.
+
+### Why do layers matter?
+
+- They support build caching.
+- They can reduce repeated downloads.
+- They allow layer reuse between images.
+- Poorly structured Dockerfiles can increase build time and image size.
+
+**Best practice:** Place instructions that change frequently, such as application source files, after stable dependency-installation steps where practical.
+
+---
+
+## 8. Docker Image Naming and Tags
+
+A common Docker image reference follows this pattern:
+
+```text
+[registry/]repository[:tag]
+```
+
+Example:
+
+```text
+docker.io/library/nginx:latest
+```
+
+| Component | Example | Purpose |
+|---|---|---|
+| Registry | `docker.io` | Stores and distributes images |
+| Repository | `library/nginx` | Identifies the image repository |
+| Tag | `latest` | Identifies a named image variant or release |
+
+### Common image commands
+
+```bash
+docker image ls
+docker pull nginx:latest
+docker pull nginx:alpine
+docker image inspect nginx:alpine
+```
+
+### What does `latest` mean?
+
+`latest` is a tag name, not a guarantee that the image contains the newest release.
+
+The tag can be moved to point to a different image over time. For more reproducible deployments, use a deliberate version tag and, where appropriate, pin the image by digest.
+
+Example:
+
+```text
+nginx:1.27
+nginx:alpine
+nginx:latest
+```
+
+**Production recommendation:** Choose a version that is supported and appropriate for your application. Verify the image's maintenance status and security updates before using it in production.
+
+---
+
+## 9. Docker Image Optimization
+
+Smaller, well-structured images can improve build speed, image distribution, and deployment efficiency.
+
+### 9.1 Choose an Appropriate Base Image
+
+Use a base image that meets your application's runtime and security requirements.
+
+Examples include:
+- Alpine-based images
+- Debian-based images
+- Ubuntu-based images
+- Official language runtime images
+- Distroless images, where suitable
+
+A smaller image is not automatically more secure. Consider compatibility, available security updates, and operational debugging requirements.
+
+### 9.2 Use a `.dockerignore` File
+
+Example:
+
+```text
+.git
+node_modules
+.env
+*.log
+coverage
+```
+
+A `.dockerignore` file excludes matching files from the Docker build context.
+
+**Security note:** Do not copy secrets into an image. Excluding `.env` helps avoid accidental inclusion, but secrets should also be managed through appropriate secret-management mechanisms.
+
+### 9.3 Use Multi-Stage Builds
+
+Multi-stage builds separate the build environment from the final runtime image.
+
+Example:
+
+```dockerfile
+# Build stage
+FROM golang:1.24 AS builder
+
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 go build -o app .
+
+# Runtime stage
+FROM scratch
+
+COPY --from=builder /app/app /app
+ENTRYPOINT ["/app"]
+```
+
+This example is suitable only when the application can run without additional runtime files or shared libraries. Some applications require certificates, configuration files, or other runtime dependencies.
+
+Build the image:
+
+```bash
+docker build -t go-app:1.0 .
+```
+
+Inspect its size:
+
+```bash
+docker image ls go-app:1.0
+```
+
+### Optimization checklist
+
+- Use an appropriate base image.
+- Exclude unnecessary files from the build context.
+- Use multi-stage builds where appropriate.
+- Avoid unnecessary packages and temporary files.
+- Combine related package installation and cleanup steps when useful.
+- Review image layers and build-cache behavior.
+- Test the final image before deploying it.
+
+---
+
+## 10. Docker Image Security Best Practices
+
+Container security should be considered throughout the build and deployment process.
+
+### Recommended practices
+
+1. **Use trusted images:** Prefer official images or images from trusted publishers.
+2. **Update dependencies:** Use supported base images and apply security updates.
+3. **Scan images:** Tools such as Trivy can identify known vulnerabilities in images and dependencies.
+4. **Avoid hardcoded secrets:** Never store passwords, tokens, or private keys in Dockerfiles or image layers.
+5. **Run as a non-root user:** Where the application supports it, avoid running the application as root.
+6. **Use specific image versions:** Avoid relying solely on mutable tags such as `latest`.
+7. **Apply resource limits:** Prevent a container from consuming unlimited CPU or memory.
+8. **Reduce unnecessary packages:** Minimize the attack surface.
+9. **Restrict privileges:** Avoid privileged containers unless there is a justified requirement.
+10. **Review image provenance:** Verify where images come from and use signatures or attestations where supported.
+
+### Example: Scan an image using Trivy
+
+If Trivy is installed:
+
+```bash
+trivy image nginx:latest
+```
+
+To focus on vulnerabilities with higher severity:
+
+```bash
+trivy image --severity HIGH,CRITICAL nginx:latest
+```
+
+Review the results and update vulnerable packages or select an appropriately patched image. A scan result alone does not prove that an image is completely secure.
+
+---
+
+## 11. Hands-on Practical: Run an NGINX Container
+
+Let's practice pulling an image, running a container, viewing logs, checking resource usage, and inspecting image details.
+
+### Step 1: Pull the Image
+
+```bash
+docker pull nginx:latest
+```
+
+### Step 2: Verify the Image
+
+```bash
+docker image ls
+docker image inspect nginx:latest
+docker image history nginx:latest
+```
+
+### Step 3: Run a Container
+
+```bash
+docker run -d \
+  --name web \
+  -p 8080:80 \
+  nginx:latest
+```
+
+### Step 4: Check the Container
+
+```bash
+docker ps
+docker ps -a
+```
+
+### Step 5: Open the Website
+
+Visit:
+
+```text
+http://localhost:8080
+```
+
+If Docker is running on a remote server, access the server's appropriate address and port, provided network and firewall rules allow it.
+
+### Step 6: View Logs and Resource Usage
+
+```bash
+docker logs web
+docker stats web
+docker inspect web
+```
+
+### Step 7: Open a Shell
+
+```bash
+docker exec -it web /bin/sh
+```
+
+Inside the container, try:
+
+```sh
+cat /etc/os-release
+exit
+```
+
+The exact utilities available depend on the image.
+
+### Step 8: Rename the Container
+
+```bash
+docker rename web nginx-web
+```
+
+Verify:
+
+```bash
+docker ps -a
+```
+
+### Step 9: Stop and Remove the Container
+
+```bash
+docker stop nginx-web
+docker rm nginx-web
+```
+
+These commands remove the container, not the downloaded image.
+
+---
+
+## 12. Troubleshooting Common Issues
+
+### Issue 1: Container Is Not Running
+
+Check:
+
+```bash
+docker ps -a
+docker logs myapp
+docker inspect myapp
+```
+
+**Possible causes:** Application crash, incorrect configuration, missing dependencies, or resource exhaustion.
+
+### Issue 2: Website Is Not Opening
+
+Check the port mapping:
+
+```bash
+docker port web
+```
+
+Check whether the container is running:
+
+```bash
+docker ps
+```
+
+Also verify host firewall rules, application logs, and whether another process is using the host port.
+
+### Issue 3: Cannot Execute Bash
+
+Try:
+
+```bash
+docker exec -it myapp /bin/sh
+```
+
+Some minimal images do not include Bash.
+
+### Issue 4: Image Removal Fails
+
+List containers:
+
+```bash
+docker ps -a
+```
+
+Remove dependent containers only after confirming they are no longer needed. Then retry removing the image.
+
+### Issue 5: Container Uses Too Much Memory
+
+Inspect live usage:
+
+```bash
+docker stats
+```
+
+Check configured limits:
+
+```bash
+docker inspect \
+  --format='{{.HostConfig.Memory}}' myapp
+```
+
+Review the application's memory behavior before changing limits.
+
+---
+
+## 13. Docker Interview Questions
+
+**Q1. What is the difference between a Docker image and a container?**
+
+An image is the packaged template used to create a container. A container is an instance created from that image.
+
+**Q2. What is the purpose of `docker ps`?**
+
+It lists running containers. Use `docker ps -a` to include stopped containers.
+
+**Q3. What is the difference between `docker exec` and `docker run`?**
+
+`docker run` creates and starts a new container. `docker exec` executes a command inside an existing running container.
+
+**Q4. How do you check container logs?**
+
+```bash
+docker logs myapp
+```
+
+**Q5. What is the purpose of `docker stats`?**
+
+It displays live CPU, memory, network, and block I/O statistics for containers.
+
+**Q6. What are Docker image layers?**
+
+They are filesystem layers that make up an image. Reusable layers and build caching can improve efficiency.
+
+**Q7. Does the `latest` tag always mean the newest version?**
+
+No. `latest` is a tag name that can point to a different image over time.
+
+**Q8. How do you limit container memory?**
+
+```bash
+docker run -d --memory=256m nginx:latest
+```
+
+**Q9. How do you copy files between the host and a container?**
+
+Use `docker cp`. The direction depends on the order of the source and destination paths.
+
+**Q10. How can you reduce Docker image size?**
+
+Use appropriate base images, exclude unnecessary files, remove unnecessary dependencies, and consider multi-stage builds.
+
+---
+
+## 14. Conclusion
+
+In this session, we learned how to:
+
+- Manage Docker containers.
+- Inspect container configuration.
+- View logs and monitor resources.
+- Apply CPU and memory limits.
+- Copy files between containers and the host.
+- Understand Docker images, layers, and tags.
+- Optimize images and improve security.
+- Deploy and troubleshoot an NGINX container.
+
+**Next step:** Practice these commands in a local Docker environment before applying them to real projects.
+
+---
+
+# PART 2: TELUGU-ENGLISH EXPLANATION 🇮🇳
+
+## 15. Docker Introduction – Docker Ante Enti?
+
+Docker anedi application ni daniki kavalsina dependencies tho kalipi package chesi run cheyadaniki use chese containerization platform.
+
+Simple ga cheppalante, mana application development system lo ela run avutundo, alage testing and production environments lo kuda consistent ga run avvadaniki Docker help chestundi.
+
+### Image vs Container
+
+- **Docker Image:** Application run cheyadaniki avasaramaina files and configuration unna template.
+- **Docker Container:** Aa image nunchi create chesi run chesina instance.
+
+Example: NGINX image download chesi, dani nunchi container create chestam. Aa container lo NGINX web server run avutundi.
+
+---
+
+## 16. Container Commands – Easy Explanation
+
+### Running Containers
+
+```bash
+docker ps
+```
+
+Currently run avutunna containers ni chupistundi.
+
+```bash
+docker ps -a
+```
+
+Running, stopped, exited containers anni chupistundi.
+
+### Container Details
+
+```bash
+docker inspect myapp
+```
+
+Container configuration, IP address, network settings, mounts, and status details telusukovachu.
+
+### Container Lopala Enter Avvadam
+
+```bash
+docker exec -it myapp /bin/sh
+```
+
+Running container lopala shell open cheyadaniki use chestam.
+
+- `exec` – Existing container lopala command execute chestundi.
+- `-i` – Input open ga unchutundi.
+- `-t` – Terminal provide chestundi.
+- `/bin/sh` – Shell open chestundi.
+
+Shell nunchi bayataki ravadaniki:
+
+```bash
+exit
+```
+
+---
+
+## 17. Logs and Monitoring
+
+Application enduku fail ayyindi, startup lo em errors vachayi anevi logs dwara telusukovachu.
+
+### Logs Display Cheyadam
+
+```bash
+docker logs myapp
+```
+
+Container logs display chestundi.
+
+### Live Logs Choodadam
+
+```bash
+docker logs -f myapp
+```
+
+Application run avutunnappudu logs real time lo choodachu.
+
+### Last 100 Lines
+
+```bash
+docker logs --tail 100 myapp
+```
+
+Last 100 log lines matrame chupistundi.
+
+### Resource Monitoring
+
+```bash
+docker stats
+```
+
+Containers entha CPU, memory, network, disk I/O use chestunnayo chupistundi.
+
+### Docker Events
+
+```bash
+docker events
+```
+
+Containers create, start, stop, destroy ayinappudu Docker events display chestundi.
+
+**Real-time example:** Application open avvakapothe first container status check cheyali, tarvata logs choodali, tarvata configuration inspect cheyali.
+
+```bash
+docker ps -a
+docker logs myapp
+docker inspect myapp
+```
+
+---
+
+## 18. Resource Limits – CPU and Memory
+
+Container ki limits set cheyakapothe, application ekkuva resources consume chese possibility untundi.
+
+Example:
+
+```bash
+docker run -d \
+  --name myapp \
+  -p 8080:80 \
+  --memory=256m \
+  --cpus=1 \
+  nginx:latest
+```
+
+Meaning:
+
+- `--name myapp` – Container ki name istunnam.
+- `-p 8080:80` – Host port 8080 ni container port 80 ki map chestunnam.
+- `--memory=256m` – Memory limit 256 MiB.
+- `--cpus=1` – CPU processing capacity ni one CPU equivalent ki limit chestunnam.
+- `-d` – Background lo container run avutundi.
+
+Browser lo `http://localhost:8080` open chesthe NGINX page kanipistundi.
+
+Memory limit check cheyadaniki:
+
+```bash
+docker inspect \
+  --format='{{.HostConfig.Memory}}' myapp
+```
+
+CPU limit check cheyadaniki:
+
+```bash
+docker inspect \
+  --format='{{.HostConfig.NanoCpus}}' myapp
+```
+
+**Important:** Production lo limits application requirements and monitoring metrics base chesukoni set cheyali. Mari takkuva limit pedithe application slow avvachu leda memory exhaustion valla terminate avvachu.
+
+---
+
+## 19. Useful Docker Commands
+
+### Container Rename Cheyadam
+
+```bash
+docker rename myapp webapp
+```
+
+Container name change avutundi. Image ni rebuild cheyyalsina avasaram ledu.
+
+### Container Nunchi Host Ki File Copy Cheyadam
+
+```bash
+docker cp myapp:/etc/hostname ./hostname.txt
+```
+
+Container lo unna file ni host machine ki copy chestundi.
+
+### Host Nunchi Container Ki File Copy Cheyadam
+
+```bash
+docker cp ./index.html myapp:/usr/share/nginx/html/index.html
+```
+
+Host lo unna file ni container lopalaki copy chestundi.
+
+**Easy trick:**
+
+- First container, next host path unte — container to host.
+- First host path, next container unte — host to container.
+
+### Linux Distribution Check Cheyadam
+
+```bash
+docker exec myapp cat /etc/os-release
+```
+
+Container user-space lo ye Linux distribution information available undo chupistundi.
+
+**Remember:** Linux container host kernel ni share chestundi. Virtual machine laga separate guest kernel boot cheyyadu.
+
+---
+
+## 20. Docker Images, Layers, and Tags
+
+### Images List Cheyadam
+
+```bash
+docker image ls
+```
+
+Local system lo unna images list display chestundi.
+
+### Image Download Cheyadam
+
+```bash
+docker pull nginx:latest
+```
+
+Registry nunchi NGINX image download chestundi.
+
+### Image Details
+
+```bash
+docker image inspect nginx:latest
+```
+
+Image configuration and metadata chupistundi.
+
+### Image History
+
+```bash
+docker image history nginx:latest
+```
+
+Image build history and associated layer information display chestundi.
+
+### Image vs Container
+
+Image anedi template; container anedi aa template nunchi create chesina instance.
+
+### Image Layers Ante Enti?
+
+Docker image multiple filesystem layers tho form avutundi. Build process lo Docker reusable layers ni cache cheyagaladu.
+
+Example Dockerfile:
+
+```dockerfile
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
+COPY index.html .
+EXPOSE 80
+```
+
+- `FROM` – Base image select chestundi.
+- `WORKDIR` – Working directory set chestundi.
+- `COPY` – Website file ni image lo add chestundi.
+- `EXPOSE` – Application use cheyyalanukunna port ni document chestundi.
+
+### `latest` Tag Ante Enti?
+
+`latest` anedi oka tag name matrame. Adi prathi sari newest version ani guarantee ledu.
+
+Production lo version tags use cheyadam, image updates verify cheyadam, avasaramaithe image digest pin cheyadam better.
+
+---
+
+## 21. Image Optimization and Security
+
+Image size thaggisthe downloads and deployments faster avvachu. Kani small image ante automatic ga secure image ani kaadu.
+
+### `.dockerignore` Example
+
+```text
+.git
+node_modules
+.env
+*.log
+coverage
+```
+
+Unnecessary files Docker build context loki vellakunda `.dockerignore` help chestundi.
+
+**Security:** Passwords, API keys, tokens ni Dockerfile lo hardcode cheyyakudadhu. `.env` file ni image lo copy cheyyakudadhu. Proper secret-management solution use cheyali.
+
+### Multi-Stage Build
+
+Multi-stage build lo build tools unna stage ni final runtime stage nunchi separate chestam.
+
+Dini valla final image lo unnecessary build tools include avvakunda choodachu.
+
+### Security Best Practices
+
+1. Trusted images use cheyali.
+2. Supported base images and dependencies update cheyali.
+3. Trivy lanti tools tho vulnerability scanning cheyali.
+4. Secrets ni image lo store cheyyakudadhu.
+5. Possible ayithe non-root user tho application run cheyali.
+6. CPU and memory limits set cheyali.
+7. Unnecessary packages remove cheyali.
+8. Privileged containers ni avoid cheyali.
+9. Production ki image version and security updates verify cheyali.
+
+Trivy installed unte:
+
+```bash
+trivy image nginx:latest
+```
+
+High and critical vulnerabilities focus cheyadaniki:
+
+```bash
+trivy image --severity HIGH,CRITICAL nginx:latest
+```
+
+Scan report lo unna findings ni analyze chesi appropriate fixes apply cheyali.
+
+---
+
+## 22. Complete Practical – NGINX Container
+
+### Step 1: Image Download
+
+```bash
+docker pull nginx:latest
+```
+
+### Step 2: Image Details Check
+
+```bash
+docker image ls
+docker image inspect nginx:latest
+docker image history nginx:latest
+```
+
+### Step 3: Container Run
+
+```bash
+docker run -d --name web -p 8080:80 nginx:latest
+```
+
+### Step 4: Container Status
+
+```bash
+docker ps
+docker ps -a
+```
+
+### Step 5: Website Open
+
+```text
+http://localhost:8080
+```
+
+### Step 6: Logs and Monitoring
+
+```bash
+docker logs web
+docker stats web
+docker inspect web
+```
+
+### Step 7: Container Lopala Enter Avvadam
+
+```bash
+docker exec -it web /bin/sh
+```
+
+Container lopala:
+
+```sh
+cat /etc/os-release
+exit
+```
+
+### Step 8: Container Rename
+
+```bash
+docker rename web nginx-web
+```
+
+### Step 9: Container Stop and Remove
+
+```bash
+docker stop nginx-web
+docker rm nginx-web
+```
+
+Ee commands container ni remove chestayi, downloaded image ni kaadu.
+
+---
+
+## 23. Docker Troubleshooting – Easy Explanation
+
+### Container Run Avvatledu
+
+```bash
+docker ps -a
+docker logs myapp
+docker inspect myapp
+```
+
+First status choodali. Tarvata logs and configuration check cheyali.
+
+### Website Open Avvatledu
+
+```bash
+docker port web
+docker ps
+```
+
+Port mapping, application logs, firewall rules, and host port conflicts check cheyali.
+
+### Bash Open Avvatledu
+
+```bash
+docker exec -it myapp /bin/sh
+```
+
+Konni minimal images lo Bash undadu. Anduke `/bin/sh` try cheyachu.
+
+### Image Delete Avvatledu
+
+```bash
+docker ps -a
+```
+
+Aa image ni reference chestunna containers unnayo check cheyali. Required containers ni remove cheyadaniki mundu confirm cheyali.
+
+### Memory Ekkuva Use Avutundi
+
+```bash
+docker stats
+```
+
+Live memory usage choodachu. Tarvata application behavior and configured limits analyze cheyali.
+
+---
+
+## 24. Docker Interview Questions – Telugish
+
+**Q1. Docker image and container madhya difference enti?**
+
+Image anedi template. Container anedi aa image nunchi create chesina running or stopped instance.
+
+**Q2. `docker ps` and `docker ps -a` difference enti?**
+
+`docker ps` running containers matrame chupistundi. `docker ps -a` stopped containers tho saha anni chupistundi.
+
+**Q3. `docker run` and `docker exec` difference enti?**
+
+`docker run` new container create chesi start chestundi. `docker exec` existing running container lopala command execute chestundi.
+
+**Q4. Container logs ela choodali?**
+
+```bash
+docker logs myapp
+```
+
+**Q5. `docker stats` enduku use chestam?**
+
+Container CPU, memory, network, and block I/O usage monitor cheyadaniki.
+
+**Q6. Docker image layers ante enti?**
+
+Image filesystem ni form chese layers. Docker vatini reuse chesi build process ni efficient ga cheyagaladu.
+
+**Q7. `latest` ante newest version aa?**
+
+Guarantee ledu. `latest` anedi tag peru matrame.
+
+**Q8. Container memory limit ela set cheyali?**
+
+```bash
+docker run -d --memory=256m nginx:latest
+```
+
+**Q9. Host and container madhya files ela copy cheyali?**
+
+`docker cp` command use cheyali. Source and destination order batti direction decide avutundi.
+
+**Q10. Docker image size ela reduce cheyali?**
+
+Appropriate base image use cheyali, unnecessary files exclude cheyali, dependencies reduce cheyali, and multi-stage builds consider cheyali.
+
+---
+
+## 25. Final Summary
+
+Ee session lo manam nerchukunna concepts:
+
+- Container management commands
+- Container inspection and shell access
+- Logs and real-time monitoring
+- CPU and memory limits
+- File copying and container renaming
+- Docker images, layers, and tags
+- Image optimization
+- Docker security practices
+- NGINX practical deployment
+- Common troubleshooting commands
+
+**Practice tip:** Commands ni first local environment lo practice cheyandi. Tarvata mee own application ni Dockerize chesi, logs, ports, resource limits, and image security ni test cheyandi.
+
+---
+
+## 📚 Useful Official Documentation
+
+- Docker CLI reference: https://docs.docker.com/reference/cli/docker/
+- Docker images: https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/
+- Docker containers: https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/
+- Docker build best practices: https://docs.docker.com/build/building/best-practices/
+- Docker security: https://docs.docker.com/engine/security/
+- Trivy documentation: https://trivy.dev/
+
+---
+
+⭐ If this tutorial helps you, **star the repository** and subscribe to **FreeCodes In Telugu** for more practical tutorials on Docker, Linux, AWS, Azure, Kubernetes, Terraform, and DevOps.
+
+**Learn • Practice • Build • Deploy**
