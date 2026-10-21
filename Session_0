@@ -1,0 +1,543 @@
+# 🐳 Docker Zero to Production 🚀 — Session 0
+## Complete Docker Series Introduction & Roadmap
+
+**Channel:** FreeCodes In Telugu  
+**Level:** Beginner to Intermediate  
+**Language:** English Technical Terms + Telugu Explanation  
+**Series:** 8 Sessions + Introduction  
+**Focus:** Docker Fundamentals, Hands-on Practice, and Real-Time Project
+
+---
+
+# 📘 Part 1: English Explanation
+
+## 1. About This Session
+
+Welcome to **Docker Zero to Production**, an educational series created by FreeCodes In Telugu.
+
+This is Session 0, the introduction to our complete Docker learning journey.
+
+In this session, we will understand the learning roadmap, the topics covered in each session, and the real-time project we will build at the end.
+
+The goal is to learn Docker step by step, starting with the fundamentals and progressing toward practical containerized application development.
+
+This series focuses on both theoretical concepts and hands-on implementation.
+
+## 2. What Is Docker?
+
+Docker is a platform used to build, package, distribute, and run applications in containers.
+
+A container packages an application with its required dependencies and configuration so that it can run consistently across supported environments.
+
+For example, an application may work on a developer's laptop but fail on another machine because of differences in software versions or dependencies.
+
+Docker helps reduce these environment-related problems by packaging the application and its required components into a container image.
+
+### Why Is Docker Important?
+
+- **Consistency:** Helps applications behave consistently across development, testing, and deployment environments.
+- **Portability:** Container images can run across compatible environments that support the required container runtime.
+- **Efficiency:** Containers generally require fewer resources than full virtual machines.
+- **Scalability:** Makes it easier to run multiple application instances when supported by the application and infrastructure.
+- **DevOps Integration:** Works with CI/CD pipelines, cloud platforms, and container orchestration tools.
+- **Faster Delivery:** Helps teams package, test, and distribute applications more consistently.
+
+## 3. Why Learn Docker?
+
+Docker is an important technology for developers, Cloud Engineers, and DevOps Engineers.
+
+Without containerization, applications may depend heavily on the configuration of the machine where they were developed.
+
+Docker helps package applications and dependencies into images that can be used to create containers.
+
+Learning Docker provides a foundation for working with:
+
+- Application deployment
+- CI/CD automation
+- Microservices
+- Cloud computing
+- Container registries
+- Docker Compose
+- Kubernetes
+- DevOps automation
+
+## 4. What Will You Learn in This Series?
+
+This series contains eight technical sessions, preceded by this introductory session.
+
+By the end of the series, you will understand Docker fundamentals and apply them in a practical multi-container project.
+
+## 5. Complete 8-Session Roadmap
+
+### Session 1 — Docker Fundamentals
+
+Topics:
+- What is Docker?
+- Why do we need Docker?
+- Virtualization vs. containerization
+- Containers vs. virtual machines
+- Docker architecture
+- Docker Engine
+- Docker Client and Docker Daemon
+- Docker Registry and Docker Hub
+- Docker installation
+- Basic Docker commands
+
+**Outcome:** Understand how Docker works and run your first containers.
+
+### Session 2 — Docker Images and Containers
+
+Topics:
+- What is a Docker image?
+- What is a Docker container?
+- Image vs. container
+- Docker image layers
+- Image and container lifecycle
+- Pulling and listing images
+- Creating and running containers
+- Starting, stopping, and restarting containers
+- Removing images and containers
+- Container logs and inspection
+- Executing commands inside containers
+- Port mapping
+- Environment variables
+
+**Outcome:** Understand and manage Docker images and containers using practical commands.
+
+### Session 3 — Dockerfile and Custom Images
+
+Topics:
+- What is a Dockerfile?
+- Dockerfile structure
+- `FROM`
+- `WORKDIR`
+- `COPY`
+- `ADD`
+- `RUN`
+- `ENV`
+- `ARG`
+- `EXPOSE`
+- `CMD`
+- `ENTRYPOINT`
+- `USER`
+- `HEALTHCHECK`
+- `CMD` vs. `ENTRYPOINT`
+- Building custom images
+- Image tagging
+- `.dockerignore`
+- Dockerfile best practices
+
+**Outcome:** Create a Dockerfile and build a custom image for an application.
+
+### Session 4 — Docker Registry and Image Management
+
+Topics:
+- What is a container registry?
+- Docker Hub
+- Public vs. private registries
+- Docker login
+- Image tagging and versioning
+- Pushing images to a registry
+- Pulling images from a registry
+- Image naming conventions
+- Amazon Elastic Container Registry (Amazon ECR) basics
+- Azure Container Registry (ACR) basics
+- Image cleanup and optimization
+
+**Outcome:** Understand how Docker images are stored, versioned, and shared.
+
+### Session 5 — Docker Networking and Storage
+
+Topics:
+- Docker networking fundamentals
+- Bridge network
+- Host network
+- None network
+- Custom networks
+- Container-to-container communication
+- Port mapping
+- Docker network DNS
+- Docker volumes
+- Bind mounts
+- Named volumes
+- Persistent data
+- Volume management
+- Basic backup and restore concepts
+
+**Outcome:** Connect containers and persist application data.
+
+### Session 6 — Docker Compose
+
+Topics:
+- What is Docker Compose?
+- Why use Docker Compose?
+- YAML fundamentals
+- Compose file structure
+- Services
+- Images and builds
+- Ports
+- Environment variables
+- Volumes
+- Networks
+- Service dependencies
+- Healthchecks
+- Docker Compose commands
+- Running multi-container applications
+- Frontend + Backend + Database architecture
+
+**Outcome:** Manage multiple application services using a Compose configuration.
+
+### Session 7 — Docker Security and Troubleshooting
+
+Topics:
+- Docker security fundamentals
+- Container isolation
+- Root vs. non-root containers
+- Basic Linux capabilities
+- Secrets management fundamentals
+- Docker image vulnerability scanning
+- Trivy introduction
+- Dockerfile security practices
+- CPU and memory limits
+- Container logs
+- Docker inspect
+- Docker stats
+- Healthchecks
+- Common container errors
+- Image and network troubleshooting
+
+**Outcome:** Learn basic container security practices and troubleshoot common Docker issues.
+
+### Session 8 — Real-Time Docker Project
+
+We will combine the concepts learned throughout the series to build a practical multi-container application.
+
+Project components:
+
+- Frontend
+- Backend
+- Database
+- Dockerfiles
+- Docker images
+- Docker containers
+- Port mapping
+- Environment variables
+- Docker networks
+- Docker volumes
+- Docker Compose
+- Application testing
+- Log analysis
+- Troubleshooting
+- Resource cleanup
+
+**Outcome:** Understand the complete workflow for containerizing and running a multi-service application.
+
+---
+
+## 6. Real-Time Project Architecture
+
+The final project will use Docker Compose to manage three application services.
+
+```text
+              User / Browser
+                    |
+                    v
+                Frontend
+                Container
+                    |
+                    v
+                 Backend
+                Container
+                    |
+                    v
+                 Database
+                Container
+
+          Managed using Docker Compose
+```
+
+### How It Works
+
+1. The user accesses the application through the frontend.
+2. The frontend communicates with the backend.
+3. The backend processes application requests.
+4. The backend connects to the database when data access is required.
+5. Docker Compose defines and manages the services, networks, and volumes.
+
+The exact ports and application technology will be selected during the practical project.
+
+## 7. Prerequisites
+
+You do not need advanced Docker knowledge to start this series.
+
+Recommended basics:
+
+- Basic computer knowledge
+- Basic Linux commands
+- Command-line familiarity
+- Basic application and networking concepts
+
+Beginners are welcome. Each topic will be introduced step by step.
+
+## 8. Expected Learning Outcomes
+
+After completing this series, you should be able to:
+
+- Explain Docker architecture.
+- Understand images, containers, and image layers.
+- Run and manage containers.
+- Write Dockerfiles.
+- Build and tag custom images.
+- Push and pull images from registries.
+- Configure Docker networks.
+- Use volumes for persistent storage.
+- Run multi-container applications with Docker Compose.
+- Apply basic Docker security practices.
+- Troubleshoot common Docker problems.
+- Build and explain a practical Docker project.
+- Understand how Docker fits into a DevOps workflow.
+
+## 9. Who Should Follow This Series?
+
+This series is suitable for:
+
+- Students learning Cloud and DevOps
+- Beginners learning Docker
+- Aspiring DevOps Engineers
+- Cloud Engineers
+- Developers interested in containerization
+- IT professionals preparing for technical interviews
+
+## 10. Start Your Docker Journey
+
+Follow the sessions in order because each session builds on the previous one.
+
+Practice the commands, understand the concepts, and complete the final project to strengthen your practical skills.
+
+**Learn → Practice → Build → Troubleshoot**
+
+Subscribe to **FreeCodes In Telugu** for more educational content on Docker, Linux, AWS, Azure, DevOps, Kubernetes, and Cloud Engineering.
+
+---
+
+# 📗 Part 2: Telugish Explanation (Easy Telugu in English Letters)
+
+## 1. Ee Session Gurinchi
+
+Welcome to Docker Zero to Production series!
+
+Ee series ni FreeCodes In Telugu channel dwara explain chestunnam.
+
+Idi mana Session 0. Ee session lo Docker commands ni deep ga nerchukomu. First, ee complete series lo em nerchukuntamo, enni sessions untayo, final ga em project build chestamo chuddam.
+
+Mana goal enti ante, Docker ni basics nunchi start chesi, step-by-step practical project varaku nerchukovadam.
+
+## 2. Docker Ante Emiti?
+
+Docker anedi applications ni build cheyadaniki, package cheyadaniki, distribute cheyadaniki, containers lo run cheyadaniki use chese platform.
+
+Simple example:
+
+Manam oka application ni laptop lo develop chesam anukundam. Laptop lo application work avuthundi, kani vere server lo software versions leda dependencies different ga undatam valla application fail avvachu.
+
+Ee environment problems ni tagginchadaniki Docker help chestundi.
+
+Docker image lo application ki avasaramaina files, dependencies, runtime configuration instructions ni package cheyochu. Aa image nunchi containers create chesi application ni run cheyochu.
+
+### Docker Enduku Important?
+
+- **Consistency:** Different environments lo application behavior consistent ga undataniki help chestundi.
+- **Portability:** Compatible container runtime unna environments lo images ni run cheyochu.
+- **Efficiency:** Full virtual machines tho compare chesthe containers generally takkuva resources use chestayi.
+- **Scalability:** Application requirements batti multiple container instances run cheyadaniki help chestundi.
+- **DevOps Integration:** CI/CD pipelines, cloud platforms, Kubernetes lanti tools tho integrate cheyochu.
+- **Faster Delivery:** Application ni package chesi test cheyadam, deploy cheyadam easy avuthundi.
+
+## 3. Docker Enduku Nerchukovali?
+
+Meeru DevOps Engineer, Cloud Engineer leda Developer avvali anukunte Docker chala useful technology.
+
+Docker nerchukovadam valla application deployment, CI/CD automation, microservices, cloud computing, Docker Compose, Kubernetes lanti technologies ki strong foundation vasthundi.
+
+## 4. Mana Series Lo Em Nerchukuntam?
+
+Mana series lo total 8 technical sessions untayi. Daaniki mundu Session 0 introduction untundi.
+
+Prathi session lo oka topic ni step-by-step explain chesi, commands tho practical ga demonstrate chestam.
+
+## 5. Complete 8-Session Roadmap
+
+### Session 1 — Docker Fundamentals
+
+Ee session lo Docker ante enti, enduku use chestam, Virtual Machines ki Containers ki difference enti ane concepts nerchukuntam.
+
+Docker architecture, Docker Engine, Client, Daemon, Registry, Docker installation, basic commands chustam.
+
+**Final ga:** Docker ela work avuthundo ardham chesukoni first containers run chestam.
+
+### Session 2 — Docker Images and Containers
+
+Ee session lo image ante enti, container ante enti, rendu madhya difference enti anevi nerchukuntam.
+
+Images pull cheyadam, containers run cheyadam, start, stop, restart, logs, inspect, exec, port mapping, environment variables lanti concepts practical ga chustam.
+
+**Final ga:** Docker images mariyu containers ni commands use chesi manage cheyagalugutham.
+
+### Session 3 — Dockerfile and Custom Images
+
+Mana application kosam custom Docker image create cheyadaniki Dockerfile use chestam.
+
+`FROM`, `WORKDIR`, `COPY`, `RUN`, `ENV`, `ARG`, `EXPOSE`, `CMD`, `ENTRYPOINT` lanti instructions explain chestam.
+
+Image build cheyadam, tagging, `.dockerignore`, best practices kuda nerchukuntam.
+
+**Final ga:** Mana application kosam custom Docker image create chesi run cheyagalugutham.
+
+### Session 4 — Docker Registry and Image Management
+
+Mana local machine lo unna Docker image ni Docker Hub lanti registry ki ela push cheyali? Vere machine lo ela pull cheyali? Anevi nerchukuntam.
+
+Image tagging, versioning, public and private registries, Amazon ECR, Azure Container Registry basics kuda chustam.
+
+**Final ga:** Docker images ni store cheyadam, share cheyadam, versions manage cheyadam ardham avuthundi.
+
+### Session 5 — Docker Networking and Storage
+
+Oka container vere container tho ela communicate avuthundi? Docker networks ela work avuthayi? Anevi nerchukuntam.
+
+Alage container delete chesina tarvatha kuda data safe ga ela maintain cheyalo Docker volumes, bind mounts dwara chustam.
+
+**Final ga:** Containers madhya communication setup cheyadam, data ni persistent ga store cheyadam nerchukuntam.
+
+### Session 6 — Docker Compose
+
+Mana application lo Frontend, Backend, Database unnayi anukundam.
+
+Prathi container ni separate ga manage cheyakunda, Docker Compose use chesi oka YAML configuration file dwara multiple services ni manage cheyochu.
+
+Ee session lo Compose file, services, ports, environment variables, volumes, networks, dependencies lanti concepts nerchukuntam.
+
+**Final ga:** Multiple containers ni oka configuration dwara manage cheyagalugutham.
+
+### Session 7 — Docker Security and Troubleshooting
+
+Container run avuthundi ante adi automatically secure ani kaadu.
+
+Ee session lo basic Docker security practices, non-root users, secrets management basics, Trivy image scanning, CPU and memory limits gurinchi nerchukuntam.
+
+Application work avvakapothe logs, inspect, stats, healthchecks use chesi problem ela identify cheyalo kuda chustam.
+
+**Final ga:** Common Docker problems ni identify chesi troubleshoot cheyagalugutham.
+
+### Session 8 — Real-Time Docker Project
+
+Idi mana series lo practical project session.
+
+Manam Frontend, Backend, Database tho oka multi-container application build chestam.
+
+Dockerfiles create chestam, images build chestam, containers run chestam, ports configure chestam, environment variables set chestam, networks and volumes configure chestam.
+
+Tarvatha Docker Compose dwara anni services ni run chesi application test chestam.
+
+Problem vasthe logs check chesi troubleshoot chestam.
+
+**Final ga:** Docker workflow ni beginning nunchi project execution varaku practically ardham chesukuntam.
+
+## 6. Project Architecture Simple Explanation
+
+```text
+        User / Browser
+              |
+              v
+           Frontend
+           Container
+              |
+              v
+            Backend
+           Container
+              |
+              v
+           Database
+           Container
+
+       Docker Compose
+```
+
+Simple ga cheppalante:
+
+1. User browser lo application open chestadu.
+2. Frontend user ki interface chupistundi.
+3. Frontend backend ki requests pampistundi.
+4. Backend required data kosam database tho communicate chestundi.
+5. Docker Compose ee services ni manage chestundi.
+
+## 7. Prerequisites
+
+Ee series start cheyadaniki advanced knowledge avasaram ledu.
+
+Basic Linux commands, command line usage, application basics telisthe helpful ga untundi.
+
+Beginner ayina parledhu. Manam step-by-step nerchukuntam.
+
+## 8. Series Complete Chesaka Em Vastundi?
+
+Ee series complete chesina tarvatha meeru:
+
+- Docker architecture explain cheyagalugutharu.
+- Images and containers create, run, manage cheyagalugutharu.
+- Dockerfiles rayagalugutharu.
+- Custom images build cheyagalugutharu.
+- Docker Hub ki images push and pull cheyagalugutharu.
+- Networks and volumes configure cheyagalugutharu.
+- Docker Compose use chesi multiple containers manage cheyagalugutharu.
+- Basic security practices follow avvagalugutharu.
+- Common Docker errors troubleshoot cheyagalugutharu.
+- Real-time Docker project build chesi explain cheyagalugutharu.
+
+## 9. Ee Series Evariki Useful?
+
+Ee series students, beginners, aspiring DevOps Engineers, Cloud Engineers, Developers, mariyu Docker interviews ki prepare avuthunna vallaki useful ga untundi.
+
+## 10. Mana Docker Journey Start Cheddam!
+
+Prathi session ni order lo follow avvandi. Commands ni meeru kuda practice cheyandi.
+
+Just video chudadam kakunda, practical ga implement cheyadam meeda focus cheyandi.
+
+**Learn → Practice → Build → Troubleshoot**
+
+Docker, Linux, AWS, Azure, DevOps, Kubernetes tutorials kosam **FreeCodes In Telugu** channel ni subscribe cheyandi.
+
+Mana Docker journey ni start cheddam! 🚀
+
+---
+
+# 📌 Repository Learning Roadmap
+
+```text
+Docker-Zero-to-Production/
+├── README.md
+├── Session-01-Docker-Fundamentals/
+├── Session-02-Images-and-Containers/
+├── Session-03-Dockerfile-and-Custom-Images/
+├── Session-04-Registry-and-Image-Management/
+├── Session-05-Networking-and-Storage/
+├── Session-06-Docker-Compose/
+├── Session-07-Security-and-Troubleshooting/
+└── Session-08-Real-Time-Docker-Project/
+```
+
+*Note: These are suggested folder names. Create each folder as you publish its session materials.*
+
+---
+
+## ⭐ Support the Series
+
+If this learning resource helps you:
+
+- Star ⭐ the GitHub repository.
+- Share it with friends who are learning Docker.
+- Practice the commands and concepts.
+- Subscribe to FreeCodes In Telugu on YouTube.
+
+**Learn Docker step by step. Build your skills. Create real projects.**
