@@ -1,0 +1,598 @@
+# Docker Networking — Session 3
+## FreeCodes In Telugu | Docker Series
+
+Learn Docker Networking from the basics with practical commands and real-world examples.
+
+This guide is organized in two parts:
+1. **English** — definitions, concepts, commands, and practical examples.
+2. **Telugish (Telugu + English)** — the same concepts explained in simple Telugu-English.
+
+---
+
+# Part 1 — English
+
+## 1. What Is Docker Networking?
+
+Docker Networking allows containers to communicate with one another, connect to external networks, and expose applications to users when needed.
+
+### Real-world example
+
+Consider an e-commerce application with three components:
+
+- **Frontend:** Displays the website to users.
+- **Backend:** Processes requests and implements application logic.
+- **Database:** Stores application data.
+
+The frontend sends requests to the backend, and the backend queries the database. Docker networking provides the connectivity needed between these components.
+
+Networking also helps control which containers can communicate with each other.
+
+## 2. Important Networking Terms
+
+| Term | Definition |
+|---|---|
+| Container IP address | An IP address assigned to a container on a network. |
+| Port | A numbered endpoint through which an application accepts network traffic. |
+| DNS | Resolves a name to an IP address. Docker user-defined networks provide container-name DNS resolution. |
+| Network isolation | Limits connectivity between workloads according to their network configuration. |
+| Port publishing | Maps a host port to a port inside a container. |
+| Network driver | Determines how a Docker network provides connectivity. |
+
+### Host port vs. container port
+
+In `-p 8080:80`:
+- `8080` is the host port.
+- `80` is the container port.
+- Traffic sent to host port 8080 is forwarded to port 80 in the container.
+
+## 3. How Docker Networking Works
+
+Docker Engine connects containers to Docker networks. Containers attached to the same suitable network can communicate if the destination application is listening on the expected port and no other rule blocks the traffic.
+
+A container being in the `running` state does not guarantee that its application is healthy or reachable.
+
+## 4. Docker Network Drivers and Modes
+
+### Bridge
+Bridge networking is commonly used for standalone containers on one Docker host. A user-defined bridge network supports automatic DNS resolution between containers by name.
+
+### Host
+On supported Linux environments, host networking makes a container share the host's network namespace. Separate port publishing is unnecessary in this mode. The `-p` option is not used for host networking. Docker Desktop behavior depends on its version and configuration.
+
+### None
+The `none` network mode does not attach the container to a normal external Docker network. The loopback interface remains available.
+
+### Container
+The `container:<name-or-id>` network mode shares another container's network namespace. Both containers share the same network interfaces, IP address, and port space.
+
+### Overlay
+Overlay networks connect services across Docker hosts and are commonly used with Docker Swarm. Multi-host operation requires the appropriate Swarm configuration and network connectivity.
+
+## 5. Default Bridge vs. User-Defined Bridge
+
+The default bridge is used for standalone containers when no network is specified on a typical Linux Docker Engine.
+
+A user-defined bridge network is generally preferred when related containers need to communicate because Docker provides DNS resolution by container name on that network.
+
+## 6. Practical Lab: Create a Custom Network
+
+### Step 1 — List existing networks
+
+```bash
+docker network ls
+```
+
+Lists existing Docker networks and their drivers.
+
+### Step 2 — Inspect built-in networks
+
+```bash
+docker network inspect bridge
+docker network inspect host
+docker network inspect none
+```
+
+Displays detailed configuration for each network.
+
+### Step 3 — Create a custom network
+
+```bash
+docker network create app-net
+docker network ls
+docker network inspect app-net
+```
+
+Docker uses the bridge driver by default if no driver is specified.
+
+### Step 4 — Run two containers on the same network
+
+```bash
+docker run -d --name c1 --network app-net alpine sleep infinity
+docker run -d --name c2 --network app-net alpine sleep infinity
+docker ps
+```
+
+- `-d`: Runs the container in the background.
+- `--name`: Assigns a container name.
+- `--network`: Connects the container to the selected network.
+- `alpine`: Uses a lightweight Linux image.
+- `sleep infinity`: Keeps the container running for the lab.
+
+### Step 5 — Test container-to-container communication
+
+```bash
+docker exec -it c2 sh
+```
+
+Inside the `c2` shell:
+
+```sh
+ping -c 3 c1
+```
+
+If `ping` is not installed in the Alpine image, install it for the lab:
+
+```sh
+apk add --no-cache iputils
+ping -c 3 c1
+exit
+```
+
+On a user-defined bridge, Docker's embedded DNS can resolve `c1` to its container IP. A successful ping checks basic network reachability; it does not prove that every application port is working.
+
+### Step 6 — Inspect a container's network configuration
+
+```bash
+docker inspect c1
+docker inspect c2
+docker network inspect app-net
+```
+
+To print the IP address assigned to `c1` on its attached network:
+
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' c1
+```
+
+Container IP addresses may change when containers are recreated. Prefer DNS names over hard-coded container IPs when possible.
+
+## 7. Publish an Application Port with Nginx
+
+Run Nginx on the custom network and publish host port 8080 to container port 80:
+
+```bash
+docker run -d \
+  --name web \
+  --network app-net \
+  -p 8080:80 \
+  nginx:alpine
+```
+
+Test from the Docker host:
+
+```bash
+docker port web
+curl http://localhost:8080
+```
+
+You can also open `http://localhost:8080` in a browser running on the Docker host.
+
+If Docker is running on a remote server such as an EC2 instance, `localhost` refers to that server only when the command is run on the server. For access from your own computer, use the server's reachable address and configure firewall or cloud security rules appropriately.
+
+## 8. Test Internal Access to Nginx
+
+Run a temporary Alpine container on the same network:
+
+```bash
+docker run --rm --network app-net alpine wget -qO- http://web
+```
+
+This sends an HTTP request to the `web` container using its name and internal port 80. Port 80 does not need to be published for communication between containers on the same suitable network.
+
+## 9. Demonstrate Bridge and None Modes
+
+### Bridge / user-defined bridge
+
+```bash
+docker run -d --name api --network app-net alpine sleep infinity
+```
+
+This attaches `api` to the custom bridge network.
+
+### None
+
+```bash
+docker run --rm -it --network none alpine sh
+```
+
+Inside the container:
+
+```sh
+ip addr
+exit
+```
+
+The container has loopback networking but no normal external network attachment.
+
+## 10. Optional: Host Network Mode
+
+On a supported Linux Docker Engine:
+
+```bash
+docker run -d --name host-nginx --network host nginx:alpine
+```
+
+The container shares the host network namespace. Do not add `-p` to this command. Check that the required host port is available before running the application.
+
+## 11. Troubleshooting Commands
+
+```bash
+# List running containers
+docker ps
+
+# List all containers, including stopped containers
+docker ps -a
+
+# View application logs
+docker logs web
+
+# Inspect container configuration
+docker inspect web
+
+# Check port mappings
+docker port web
+
+# Inspect the custom network
+docker network inspect app-net
+```
+
+Useful checks:
+1. Is the container running?
+2. Is the application running and listening on the expected port?
+3. Are the containers attached to the correct network?
+4. Does the destination name resolve?
+5. Is the host port published correctly?
+6. Are host firewalls or cloud security rules blocking traffic?
+7. Do the application logs show errors?
+
+Commands such as `ping`, `getent`, `ss`, and `ip` may not be installed in every container image. Run diagnostics in an environment that has the required tools and permissions.
+
+## 12. Real-World Architecture: Frontend, Backend, and Database
+
+A common architecture contains:
+- **Frontend:** Accepts user traffic.
+- **Backend API:** Processes requests.
+- **Database:** Stores application data.
+
+Related containers can share an appropriate Docker network. The frontend can call a backend using a container or service name and its internal port, provided name resolution and connectivity are configured correctly.
+
+Publish only the ports that need to be reachable from outside the Docker network. Keep backend and database ports private unless external access is specifically required.
+
+Important: A browser running on a user's computer generally cannot resolve Docker-only container names such as `backend`. Browser-facing applications need an appropriate public endpoint, reverse proxy, or routing configuration.
+
+## 13. Cleanup
+
+Run these commands only after finishing the lab and only for resources created for this practice:
+
+```bash
+docker rm -f c1 c2 web api
+docker network rm app-net
+```
+
+If a container name does not exist, Docker may report an error for that name. Remove only the lab resources you intend to delete.
+
+## 14. Practice Challenge
+
+1. Create a network named `lab-net`.
+2. Run two Alpine containers named `c1` and `c2` on that network.
+3. Test connectivity from `c2` to `c1` by name.
+4. Inspect their network configuration and IP addresses.
+5. Run Nginx and publish host port 8080 to container port 80.
+6. Test Nginx from the Docker host and from another container on the same network.
+7. Intentionally test a wrong container name or port, then troubleshoot the failure.
+
+---
+
+# Part 2 — Telugish (Telugu + English)
+
+## 1. Docker Networking ante enti?
+
+Docker Networking ante containers okadanitho okati communicate avvadaniki, external services ni access cheyadaniki, avasaram ayithe application ni users ki expose cheyadaniki use chese mechanism.
+
+### Real-world example
+
+Oka e-commerce application lo three components unnayi anukondi:
+- **Frontend:** User ki website ni display chestundi.
+- **Backend:** Requests process chesi application logic execute chestundi.
+- **Database:** Application data ni store chestundi.
+
+User login button click chesthe frontend request backend ki pampistundi. Backend database nunchi data fetch chesi response istundi.
+
+Ee components different containers lo run ayina, vatiki correct network connectivity undali. Anduke Docker Networking use chestam.
+
+## 2. Important Networking Terms
+
+| Term | Simple explanation |
+|---|---|
+| Container IP | Network lo container ni identify cheyadaniki use ayye IP address. |
+| Port | Application network requests accept chese numbered endpoint. |
+| DNS | Name ni IP address ga resolve chestundi. |
+| Network Isolation | Ye containers communicate cheyagalavo network configuration dwara control cheyadam. |
+| Port Publishing | Host port ni container port ki map cheyadam. |
+| Network Driver | Docker network connectivity ela provide cheyyalo define chestundi. |
+
+### Host port vs. Container port
+
+`-p 8080:80` lo:
+- `8080` host port.
+- `80` container port.
+- Host port 8080 ki vachina traffic container port 80 ki forward avuthundi.
+
+## 3. Docker Networking ela work avuthundi?
+
+Docker Engine containers ni Docker networks ki connect chestundi.
+
+Rendu containers same suitable network lo unte, destination application correct port meeda listen chesthu, vere rules block cheyakapothe, avi communicate cheyagaluguthayi.
+
+Container running lo undi ante application kuda healthy ga undani guarantee kaadu.
+
+## 4. Docker Network Modes
+
+### Bridge
+Oka Docker host meeda standalone containers madhya communication kosam bridge network common ga use chestam.
+
+User-defined bridge network lo container names dwara DNS resolution support untundi.
+
+### Host
+Supported Linux environment lo container host network namespace ni share chestundi. Separate port publishing avasaram undadu. Ee mode lo `-p` use cheyyaru. Docker Desktop behavior version and configuration batti vary avvachu.
+
+### None
+`none` mode lo container ki normal external Docker network attachment undadu. Loopback interface matram available ga untundi.
+
+### Container
+`container:<name-or-id>` mode lo oka container, inko container network namespace ni share chestundi. Rendu containers same IP address and port space use chestayi.
+
+### Overlay
+Multiple Docker hosts madhya services ni connect cheyadaniki overlay network use chestam. Docker Swarm lo idi common. Multi-host setup kosam correct Swarm configuration and network connectivity avasaram.
+
+## 5. Default Bridge vs. User-Defined Bridge
+
+Docker lo network specify cheyakapothe typical Linux Docker Engine lo default bridge use avuthundi.
+
+Kaani related containers madhya communication kosam user-defined bridge generally better.
+
+Endukante aa network lo container names use chesi communicate cheyadaniki Docker DNS help chestundi.
+
+## 6. Practical Lab: Custom Network Create Cheyadam
+
+### Step 1 — Existing networks list cheyadam
+
+```bash
+docker network ls
+```
+
+Mana Docker environment lo existing networks list avuthayi.
+
+### Step 2 — Built-in networks inspect cheyadam
+
+```bash
+docker network inspect bridge
+docker network inspect host
+docker network inspect none
+```
+
+Ee commands network configuration details chupistayi.
+
+### Step 3 — Custom network create cheyadam
+
+```bash
+docker network create app-net
+docker network ls
+docker network inspect app-net
+```
+
+Driver specify cheyakapothe default ga bridge driver use avuthundi.
+
+### Step 4 — Rendu containers run cheyadam
+
+```bash
+docker run -d --name c1 --network app-net alpine sleep infinity
+docker run -d --name c2 --network app-net alpine sleep infinity
+docker ps
+```
+
+- `-d`: Container background lo run avuthundi.
+- `--name`: Container ki name assign chestundi.
+- `--network`: Container ni selected network ki connect chestundi.
+- `alpine`: Lightweight Linux image.
+- `sleep infinity`: Container exit kakunda running lo unchutundi.
+
+### Step 5 — Containers madhya communication test cheyadam
+
+```bash
+docker exec -it c2 sh
+```
+
+C2 shell lopala:
+
+```sh
+ping -c 3 c1
+```
+
+`ping` command available kakapothe:
+
+```sh
+apk add --no-cache iputils
+ping -c 3 c1
+exit
+```
+
+User-defined bridge network lo Docker DNS `c1` ane name ni corresponding IP address ki resolve cheyagaladu.
+
+Ping successful ayithe basic network reachability undani artham. Kaani application port kuda work avuthundani adi guarantee cheyyadu.
+
+### Step 6 — Container IP address check cheyadam
+
+```bash
+docker inspect c1
+docker inspect c2
+docker network inspect app-net
+```
+
+C1 IP address print cheyadaniki:
+
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' c1
+```
+
+Container recreate ayithe IP address change avvachu. Anduke possible ayinantha varaku hard-coded IP badulu container names use cheyyandi.
+
+## 7. Nginx tho Port Publishing
+
+Host port 8080 ni container port 80 ki map chestu Nginx run cheddam:
+
+```bash
+docker run -d \
+  --name web \
+  --network app-net \
+  -p 8080:80 \
+  nginx:alpine
+```
+
+Test cheyadaniki:
+
+```bash
+docker port web
+curl http://localhost:8080
+```
+
+Docker host meeda browser open chesi `http://localhost:8080` enter cheyyachu.
+
+Remote EC2 server lo run chesthe, server lopala `localhost` ante EC2 machine. Mee laptop nunchi access cheyyadaniki server reachable address use cheyyali. Security group and firewall rules kuda correct ga undali.
+
+## 8. Inko Container Nunchi Nginx Access Cheyadam
+
+```bash
+docker run --rm --network app-net alpine wget -qO- http://web
+```
+
+Ee command temporary Alpine container create chesi `web` ane name dwara Nginx ki HTTP request pampistundi.
+
+Rendu containers same suitable network lo unte internal communication kosam port 80 ni host ki publish cheyyalsina avasaram ledu.
+
+## 9. Bridge and None Practical
+
+### Bridge
+
+```bash
+docker run -d --name api --network app-net alpine sleep infinity
+```
+
+`api` container ni mana custom bridge network ki connect chestunnam.
+
+### None
+
+```bash
+docker run --rm -it --network none alpine sh
+```
+
+Container lopala:
+
+```sh
+ip addr
+exit
+```
+
+Loopback interface untundi, kaani normal external network attachment undadu.
+
+## 10. Optional: Host Network Mode
+
+Supported Linux Docker Engine lo:
+
+```bash
+docker run -d --name host-nginx --network host nginx:alpine
+```
+
+Container host network namespace ni share chestundi. Ee command lo `-p` add cheyyakandi. Required host port already use avuthundo check chesukondi.
+
+## 11. Networking Troubleshooting Commands
+
+```bash
+# Running containers chudataniki
+docker ps
+
+# Stopped containers tho saha anni containers chudataniki
+docker ps -a
+
+# Application logs chudataniki
+docker logs web
+
+# Container configuration inspect cheyadaniki
+docker inspect web
+
+# Port mapping check cheyadaniki
+docker port web
+
+# Custom network inspect cheyadaniki
+docker network inspect app-net
+```
+
+Problem vachinappudu ee order lo check cheyyandi:
+1. Container running lo unda?
+2. Application correct port meeda listen chestunda?
+3. Containers correct network lo unnaya?
+4. Container name DNS resolve avuthunda?
+5. Host port publishing correct ga unda?
+6. Firewall leda cloud security rules traffic ni block chestunnaya?
+7. Application logs lo errors unnaya?
+
+`ping`, `getent`, `ss`, `ip` lanti commands prathi container image lo available undakapovachu. Required tools unna environment lo diagnostics run cheyyandi.
+
+## 12. Real-World Example: Frontend, Backend, Database
+
+Oka application lo:
+- **Frontend:** User requests receive chestundi.
+- **Backend API:** Requests process chestundi.
+- **Database:** Application data store chestundi.
+
+Related containers ni suitable Docker network ki connect cheyachu. Correct network and DNS configuration unte frontend, backend container name and internal port dwara communicate cheyagaladu.
+
+External users ki avasaramaina ports matrame publish cheyyandi. Backend and database ports ni unnecessary ga public ga expose cheyyakandi.
+
+Important: User browser lo run ayye JavaScript, Docker-only `backend` hostname ni normally resolve cheyyaledu. Browser-facing application ki public endpoint, reverse proxy, leda suitable routing configuration avasaram.
+
+## 13. Lab Cleanup
+
+Practice complete ayyaka, ee lab kosam create chesina resources ni matrame remove cheyyandi:
+
+```bash
+docker rm -f c1 c2 web api
+docker network rm app-net
+```
+
+Container already lekapothe Docker error chupinchavachu. Mee practice resources ni verify chesi matrame delete cheyyandi.
+
+## 14. Practice Challenge
+
+1. `lab-net` ane network create cheyyandi.
+2. Andulo `c1`, `c2` ane two Alpine containers run cheyyandi.
+3. C2 nunchi C1 ni name dwara ping cheyyandi.
+4. Containers network details and IP addresses inspect cheyyandi.
+5. Nginx run chesi host port 8080 ni container port 80 ki publish cheyyandi.
+6. Docker host nunchi, inko container nunchi Nginx access cheyyandi.
+7. Wrong container name leda port use chesi error ni troubleshoot cheyyandi.
+
+---
+
+## Key Takeaways
+
+- Docker Networking enables container communication and controlled access.
+- User-defined bridge networks support container-name DNS resolution.
+- Port publishing exposes a container port through a host port.
+- Host, None, Container, and Overlay modes have different purposes and limitations.
+- Inspect networks, check application ports, and read logs when troubleshooting.
+
+**Channel:** FreeCodes In Telugu  
+**Series:** Docker Series — Session 3: Docker Networking
+
+If this guide helped you, share it with other learners and practice each command in a test environment before using it in production.
