@@ -1,0 +1,2246 @@
+# Docker Interview Preparation – Complete Guide
+
+**Beginner to Advanced | Commands | Dockerfiles | Docker Compose | Real-Time Scenarios | DevOps Interviews**
+
+Welcome to the Docker Interview Preparation repository!
+
+This repository is designed for aspiring and experienced DevOps Engineers, Cloud Engineers, SREs, Platform Engineers, and DevSecOps Engineers who want to prepare for Docker technical interviews.
+
+The content covers Docker fundamentals, practical commands, configuration files, image optimization, networking, volumes, security, troubleshooting, and production-based scenarios.
+
+## Repository Objectives
+
+By completing this guide, you will learn how to:
+
+- Understand Docker architecture and fundamentals.
+- Execute essential Docker commands.
+- Build and manage Docker images.
+- Create and manage containers.
+- Write Dockerfiles from scratch.
+- Deploy multi-container applications using Docker Compose.
+- Configure Docker volumes and networking.
+- Optimize Docker images.
+- Implement Docker security best practices.
+- Troubleshoot real-time production issues.
+- Integrate Docker with CI/CD pipelines.
+
+---
+
+# Table of Contents
+
+1. Docker Fundamentals
+2. Docker Basic Commands
+3. Container Management Commands
+4. Docker Image Commands
+5. Docker Port Mapping
+6. Docker Volume Commands
+7. Docker Networking Commands
+8. Docker Compose Commands
+9. Docker Registry Commands
+10. Docker Resource Management
+11. Docker Security Commands
+12. Docker Cleanup Commands
+13. Advanced Docker Commands
+14. Dockerfile Instructions
+15. Python Flask Docker Project
+16. Multi-Stage Docker Build
+17. Docker Compose Flask + MySQL Project
+18. Environment Variables
+19. Docker Health Checks
+20. Docker Restart Policies
+21. Docker Compose Secrets
+22. Scenario-Based Interview Questions
+23. Advanced Docker Interview Questions
+24. Practical Interview Assignments
+25. Docker Interview Preparation Roadmap
+
+---
+
+# 1. Docker Fundamentals
+
+## What is Docker?
+
+Docker is an open-source platform used to build, package, distribute, and run applications inside containers.
+
+Containers package an application with its dependencies, libraries, and runtime requirements.
+
+### Why do we use Docker?
+
+- Application portability.
+- Environment consistency.
+- Faster deployment.
+- Lightweight application isolation.
+- Efficient resource utilization.
+- Simplified CI/CD integration.
+- Microservices deployment.
+- Application scalability.
+
+## Important Docker Components
+
+| Component | Description |
+|---|---|
+| Docker Client | Accepts Docker commands |
+| Docker Daemon | Manages Docker objects |
+| Docker Image | Read-only application template |
+| Docker Container | Instance of an image |
+| Docker Registry | Stores Docker images |
+| Docker Volume | Provides persistent storage |
+| Docker Network | Enables container communication |
+| Docker Compose | Manages multi-container applications |
+| containerd | Manages container lifecycle |
+| runc | Creates and runs containers |
+
+## Docker vs Virtual Machines
+
+| Docker Containers | Virtual Machines |
+|---|---|
+| Share host kernel | Run a guest OS kernel |
+| Lightweight | Usually heavier |
+| Start quickly | Usually take longer |
+| Use namespaces and cgroups | Use hardware virtualization |
+| Container images | VM disk images |
+
+## Important Interview Questions
+
+**Q1. What is Docker?**
+
+Docker is a containerization platform that allows developers to package applications and dependencies into portable containers.
+
+**Q2. What is a Docker image?**
+
+A Docker image is a read-only template used to create containers.
+
+**Q3. What is a Docker container?**
+
+A container is an isolated process environment created from a Docker image.
+
+**Q4. What is the difference between Docker image and container?**
+
+An image is the template, whereas a container is an instance created from that image.
+
+**Q5. What is Docker Engine?**
+
+Docker Engine is the client-server technology responsible for building and running containers.
+
+**Q6. What is Docker Hub?**
+
+Docker Hub is a cloud-based registry used to store and distribute Docker images.
+
+---
+
+# 2. Docker Basic Commands
+
+### Check Docker version
+
+```bash
+docker --version
+docker version
+docker info
+docker help
+```
+
+### Download Docker images
+
+```bash
+docker pull nginx
+docker pull ubuntu
+docker pull python:3.12-slim
+docker pull mysql:8.4
+```
+
+### List Docker images
+
+```bash
+docker images
+docker image ls
+```
+
+### Run containers
+
+```bash
+docker run nginx
+docker run -d nginx
+docker run -it ubuntu bash
+docker run -d --name my-nginx nginx
+```
+
+### List containers
+
+```bash
+docker ps
+docker ps -a
+docker ps -q
+```
+
+### Stop and start containers
+
+```bash
+docker stop container_name
+docker start container_name
+docker restart container_name
+```
+
+### Remove containers
+
+```bash
+docker rm container_name
+docker rm -f container_name
+```
+
+### Remove images
+
+```bash
+docker rmi image_name
+docker image prune
+```
+
+### Interview Questions
+
+**Q7. What is the difference between docker run and docker start?**
+
+- `docker run` creates and starts a new container.
+- `docker start` starts an existing stopped container.
+
+**Q8. What is the difference between docker ps and docker ps -a?**
+
+- `docker ps` displays running containers.
+- `docker ps -a` displays all containers, including stopped containers.
+
+**Q9. What is detached mode?**
+
+Detached mode runs a container in the background.
+
+Example:
+
+```bash
+docker run -d nginx
+```
+
+**Q10. How do you run an interactive container?**
+
+```bash
+docker run -it ubuntu bash
+```
+
+---
+
+# 3. Container Management Commands
+
+### Execute commands inside a container
+
+```bash
+docker exec -it container_name bash
+docker exec -it container_name sh
+```
+
+### Display container logs
+
+```bash
+docker logs container_name
+docker logs -f container_name
+docker logs --tail 100 container_name
+```
+
+### Inspect container configuration
+
+```bash
+docker inspect container_name
+```
+
+### Display container processes
+
+```bash
+docker top container_name
+```
+
+### Display resource utilization
+
+```bash
+docker stats
+docker stats container_name
+```
+
+### Copy files between host and container
+
+```bash
+docker cp index.html container_name:/app/
+docker cp container_name:/app/file.txt ./file.txt
+```
+
+### Rename containers
+
+```bash
+docker rename old_name new_name
+```
+
+### Interview Questions
+
+**Q11. What is the difference between docker exec and docker attach?**
+
+`docker exec` starts a new process inside a running container.
+
+`docker attach` connects to the existing main process streams.
+
+**Q12. How do you troubleshoot a container that exits immediately?**
+
+```bash
+docker ps -a
+docker logs container_name
+docker inspect container_name
+docker inspect -f '{{.State.ExitCode}}' container_name
+```
+
+Check the logs, exit code, application command, entrypoint, and environment variables.
+
+**Q13. How do you access a running container?**
+
+```bash
+docker exec -it container_name /bin/bash
+```
+
+If Bash is unavailable:
+
+```bash
+docker exec -it container_name /bin/sh
+```
+
+---
+
+# 4. Docker Image Management Commands
+
+### Pull images
+
+```bash
+docker pull nginx
+docker pull python:3.12-slim
+```
+
+### Build images
+
+```bash
+docker build -t myapp:v1 .
+docker build --no-cache -t myapp:v1 .
+docker build -f Dockerfile.dev -t myapp:dev .
+```
+
+### Tag images
+
+```bash
+docker tag myapp:v1 username/myapp:v1
+```
+
+### Push images
+
+```bash
+docker push username/myapp:v1
+```
+
+### View image history
+
+```bash
+docker history myapp:v1
+```
+
+### Inspect images
+
+```bash
+docker inspect myapp:v1
+```
+
+### Save and load images
+
+```bash
+docker save -o myapp.tar myapp:v1
+docker load -i myapp.tar
+```
+
+### Remove images
+
+```bash
+docker rmi myapp:v1
+docker image prune
+docker image prune -a
+```
+
+### Interview Questions
+
+**Q14. What is Docker image layering?**
+
+Docker images consist of multiple filesystem layers. Docker can reuse cached layers during subsequent builds.
+
+**Q15. What is the difference between docker build and docker pull?**
+
+- `docker build` creates an image from a Dockerfile.
+- `docker pull` downloads an existing image from a registry.
+
+**Q16. What is the difference between docker save and docker export?**
+
+- `docker save` saves an image with its layers and metadata.
+- `docker export` exports a container filesystem without preserving image layers and image metadata.
+
+**Q17. What is the difference between docker commit and docker build?**
+
+- `docker commit` creates an image from a container's current filesystem changes.
+- `docker build` creates an image using a Dockerfile.
+
+Dockerfiles are preferred for repeatable production builds.
+
+---
+
+# 5. Docker Port Mapping
+
+Port mapping allows external clients to access applications running inside containers.
+
+### Syntax
+
+```bash
+docker run -d -p HOST_PORT:CONTAINER_PORT IMAGE
+```
+
+### Examples
+
+```bash
+docker run -d -p 8080:80 nginx
+
+docker run -d -p 5000:5000 python-flask:v1
+
+docker run -d -p 127.0.0.1:8080:80 nginx
+```
+
+### Display published ports
+
+```bash
+docker port container_name
+```
+
+### Interview Questions
+
+**Q18. What is Docker port mapping?**
+
+Port mapping connects a host machine port to a container port.
+
+**Q19. Why is an application not accessible through the browser even though the container is running?**
+
+Possible reasons:
+
+- Incorrect port mapping.
+- Application listening only on localhost inside the container.
+- Container not listening on the expected port.
+- Host firewall restrictions.
+- Cloud security group or NSG restrictions.
+
+**Q20. What is the difference between EXPOSE and -p?**
+
+- `EXPOSE` documents the port an application uses.
+- `-p` publishes a container port to a host port.
+
+---
+
+# 6. Docker Volume Commands
+
+Docker volumes provide persistent storage.
+
+### Create a volume
+
+```bash
+docker volume create mydata
+```
+
+### List volumes
+
+```bash
+docker volume ls
+```
+
+### Inspect a volume
+
+```bash
+docker volume inspect mydata
+```
+
+### Mount a volume
+
+```bash
+docker run -d \
+  --name my-nginx \
+  -v mydata:/data \
+  nginx
+```
+
+### Alternative mount syntax
+
+```bash
+docker run -d \
+  --name volume-test \
+  --mount source=mydata,target=/data \
+  nginx
+```
+
+### Remove volumes
+
+```bash
+docker volume rm mydata
+docker volume prune
+```
+
+### Interview Questions
+
+**Q21. Why do we use Docker volumes?**
+
+Volumes preserve application data independently of container lifecycle.
+
+**Q22. What is the difference between a Docker volume and bind mount?**
+
+| Volume | Bind Mount |
+|---|---|
+| Managed by Docker | Uses a specific host path |
+| Suitable for persistent data | Useful for development |
+| Easier Docker management | Depends on host directory structure |
+
+**Q23. What happens to named volume data when a container is removed?**
+
+Normally, named volumes remain available and can be reused by other containers.
+
+**Q24. How do you persist MySQL database data?**
+
+```bash
+docker volume create mysql-data
+
+docker run -d \
+  --name mysql-db \
+  -e MYSQL_ROOT_PASSWORD=StrongPassword \
+  -v mysql-data:/var/lib/mysql \
+  mysql:8.4
+```
+
+---
+
+# 7. Docker Networking Commands
+
+Docker networking enables communication between containers and external systems.
+
+### List networks
+
+```bash
+docker network ls
+```
+
+### Create a network
+
+```bash
+docker network create mynetwork
+```
+
+### Inspect network
+
+```bash
+docker network inspect mynetwork
+```
+
+### Run container on a custom network
+
+```bash
+docker run -d \
+  --name web \
+  --network mynetwork \
+  nginx
+```
+
+### Connect an existing container
+
+```bash
+docker network connect mynetwork container_name
+```
+
+### Disconnect a container
+
+```bash
+docker network disconnect mynetwork container_name
+```
+
+### Remove network
+
+```bash
+docker network rm mynetwork
+docker network prune
+```
+
+### Docker Network Types
+
+| Network | Purpose |
+|---|---|
+| Bridge | Container communication on one Docker host |
+| Host | Shares host network namespace |
+| None | Disables normal container networking |
+| Overlay | Supports multi-host Docker Swarm networking |
+| Macvlan | Assigns containers MAC addresses on a physical network |
+
+### Interview Questions
+
+**Q25. What is the default Docker network?**
+
+Bridge is the default network for standalone containers.
+
+**Q26. How do two containers communicate?**
+
+Attach both containers to the same user-defined bridge network. They can communicate using container names.
+
+**Q27. What is the difference between bridge and host networking?**
+
+Bridge provides a separate container network namespace. Host networking shares the host network namespace.
+
+---
+
+# 8. Docker Compose Commands
+
+Docker Compose manages multi-container applications through YAML configuration.
+
+### Check version
+
+```bash
+docker compose version
+```
+
+### Start services
+
+```bash
+docker compose up
+docker compose up -d
+docker compose up --build -d
+```
+
+### List services
+
+```bash
+docker compose ps
+```
+
+### Display logs
+
+```bash
+docker compose logs
+docker compose logs -f
+```
+
+### Stop services
+
+```bash
+docker compose stop
+```
+
+### Start stopped services
+
+```bash
+docker compose start
+```
+
+### Remove services
+
+```bash
+docker compose down
+```
+
+### Rebuild services
+
+```bash
+docker compose build
+```
+
+### Execute commands
+
+```bash
+docker compose exec web sh
+```
+
+### Scale services
+
+```bash
+docker compose up -d --scale worker=3
+```
+
+### Interview Questions
+
+**Q28. What is Docker Compose?**
+
+Docker Compose is a tool for defining and running multi-container applications using YAML configuration files.
+
+**Q29. What is the difference between docker compose stop and down?**
+
+- `stop` stops containers without removing them.
+- `down` removes containers and project networks.
+
+Named volumes are normally retained unless explicitly removed.
+
+**Q30. What is depends_on?**
+
+It defines service startup dependencies. Health-check conditions can be used to wait for a dependency to become healthy before starting a dependent service.
+
+**Q31. How do containers communicate in Docker Compose?**
+
+Containers on the same Compose network can communicate using service names through Docker's internal DNS.
+
+---
+
+# 9. Docker Registry Commands
+
+Docker registries store and distribute images.
+
+Examples:
+
+- Docker Hub
+- AWS Elastic Container Registry (ECR)
+- Azure Container Registry (ACR)
+- GitHub Container Registry (GHCR)
+
+### Login
+
+```bash
+docker login
+docker login -u username
+```
+
+### Tag image
+
+```bash
+docker tag myapp:v1 username/myapp:v1
+```
+
+### Push image
+
+```bash
+docker push username/myapp:v1
+```
+
+### Pull image
+
+```bash
+docker pull username/myapp:v1
+```
+
+### Logout
+
+```bash
+docker logout
+```
+
+### Interview Questions
+
+**Q32. What is a Docker Registry?**
+
+A registry stores Docker images and distributes them to Docker clients.
+
+**Q33. What is the difference between Docker Hub and ECR?**
+
+Docker Hub is a general-purpose image registry. Amazon ECR is AWS's managed container registry and integrates with AWS IAM and other AWS services.
+
+**Q34. How do you push an image to a private registry?**
+
+1. Authenticate with the registry.
+2. Tag the image using the registry address.
+3. Push the tagged image.
+
+---
+
+# 10. Docker Resource Management
+
+Docker supports resource limits for containers.
+
+### Memory limit
+
+```bash
+docker run -d \
+  --memory=512m \
+  --name app \
+  nginx
+```
+
+### CPU limit
+
+```bash
+docker run -d \
+  --cpus=1.5 \
+  --name cpu-app \
+  nginx
+```
+
+### CPU and memory limits
+
+```bash
+docker run -d \
+  --memory=1g \
+  --cpus=2 \
+  nginx
+```
+
+### Display resource usage
+
+```bash
+docker stats
+```
+
+### Interview Questions
+
+**Q35. What happens when a container exceeds its memory limit?**
+
+The Linux OOM mechanism may kill processes inside the container, depending on memory availability and configuration.
+
+**Q36. What is CPU throttling?**
+
+CPU throttling restricts a container's CPU usage according to its configured CPU quota.
+
+**Q37. How do you identify containers consuming high memory?**
+
+```bash
+docker stats
+```
+
+---
+
+# 11. Docker Security Commands
+
+### Run as non-root user
+
+```bash
+docker run --user 1000:1000 nginx
+```
+
+### Read-only root filesystem
+
+```bash
+docker run --read-only nginx
+```
+
+### Drop Linux capabilities
+
+```bash
+docker run --cap-drop=ALL nginx
+```
+
+### Add a specific capability
+
+```bash
+docker run --cap-add=NET_BIND_SERVICE nginx
+```
+
+### Restrict process count
+
+```bash
+docker run --pids-limit=100 nginx
+```
+
+### Disable networking
+
+```bash
+docker run --network none nginx
+```
+
+### Image vulnerability scanning
+
+```bash
+trivy image nginx:latest
+```
+
+### Interview Questions
+
+**Q38. Why should we avoid running containers as root?**
+
+Running containers as root can increase the impact of security vulnerabilities. Using non-root users follows the principle of least privilege.
+
+**Q39. What is a read-only filesystem?**
+
+It prevents changes to the container's root filesystem. Writable locations must be explicitly provided.
+
+**Q40. What is Docker image scanning?**
+
+Image scanning identifies known vulnerabilities in operating system packages and application dependencies.
+
+Tools:
+
+- Trivy
+- Docker Scout
+- Grype
+- Snyk
+
+---
+
+# 12. Docker Cleanup Commands
+
+```bash
+docker container prune
+
+docker image prune
+
+docker network prune
+
+docker volume prune
+
+docker system prune
+
+docker system prune -a
+
+docker system df
+
+docker system df -v
+```
+
+**Q41. How do you troubleshoot Docker disk usage?**
+
+```bash
+df -h
+
+docker system df
+
+docker system df -v
+
+docker ps -a
+
+docker images
+
+docker volume ls
+```
+
+Remove only verified unused resources. Avoid deleting production volumes or images required for rollback.
+
+---
+
+# 13. Advanced Docker Commands
+
+```bash
+# Create image from container
+docker commit container_name myimage:v1
+
+# Export container filesystem
+docker export container_name -o container.tar
+
+# Import filesystem
+docker import container.tar imported-image:v1
+
+# Save image
+docker save -o image.tar myimage:v1
+
+# Load image
+docker load -i image.tar
+
+# Display Docker events
+docker events
+
+# View Docker contexts
+docker context ls
+
+# Create remote Docker context
+docker context create remote-server \
+  --docker "host=ssh://user@server-ip"
+
+# Switch context
+docker context use remote-server
+
+# Show current context
+docker context show
+
+# Return to default
+docker context use default
+```
+
+**Q42. What is docker context?**
+
+A Docker context allows the Docker CLI to communicate with a particular Docker endpoint, such as a local or remote Docker Engine.
+
+**Q43. What is docker commit?**
+
+It creates an image from the current filesystem changes of a container.
+
+**Q44. What is docker export?**
+
+It exports the filesystem of a container into a TAR archive.
+
+---
+
+# 14. Dockerfile Instructions
+
+A Dockerfile is a text file containing instructions used to build Docker images.
+
+| Instruction | Purpose |
+|---|---|
+| FROM | Select base image |
+| WORKDIR | Set working directory |
+| COPY | Copy files |
+| ADD | Copy files with additional extraction and URL capabilities |
+| RUN | Execute build-time commands |
+| CMD | Set default command or arguments |
+| ENTRYPOINT | Define main executable |
+| EXPOSE | Document application port |
+| ENV | Define environment variables |
+| ARG | Define build-time variables |
+| USER | Set runtime user |
+| VOLUME | Declare mount point |
+| LABEL | Add metadata |
+| HEALTHCHECK | Define health checks |
+| SHELL | Set shell for shell-form commands |
+| STOPSIGNAL | Set container stop signal |
+
+### Important Interview Questions
+
+**Q45. Difference between CMD and ENTRYPOINT?**
+
+CMD provides a default command or default arguments.
+
+ENTRYPOINT defines the main executable that normally runs when the container starts.
+
+**Q46. Difference between COPY and ADD?**
+
+COPY copies files and directories.
+
+ADD supports additional features such as automatic extraction of local TAR archives and remote URL sources.
+
+**Q47. Difference between RUN and CMD?**
+
+RUN executes during image building.
+
+CMD defines the default command or arguments when a container starts.
+
+**Q48. What is .dockerignore?**
+
+It excludes unnecessary files from the Docker build context.
+
+**Q49. What is a multi-stage build?**
+
+It uses multiple build stages to separate build dependencies from the final runtime image.
+
+---
+
+# 15. Python Flask Docker Project
+
+## Project Structure
+
+```text
+python-docker-app/
+│
+├── app.py
+├── requirements.txt
+├── Dockerfile
+└── .dockerignore
+```
+
+### app.py
+
+```python
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return jsonify({
+        "message": "Welcome to Docker Interview Practice",
+        "status": "Running"
+    })
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "healthy"
+    })
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+```
+
+### requirements.txt
+
+```text
+Flask==3.1.2
+```
+
+### Dockerfile
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+```
+
+### .dockerignore
+
+```text
+__pycache__/
+*.pyc
+.git/
+.env
+venv/
+.venv/
+```
+
+### Build Image
+
+```bash
+docker build -t python-flask:v1 .
+```
+
+### Run Container
+
+```bash
+docker run -d \
+  --name flask-app \
+  -p 5000:5000 \
+  python-flask:v1
+```
+
+### Verify
+
+```bash
+docker ps
+
+docker logs flask-app
+
+curl http://localhost:5000
+
+curl http://localhost:5000/health
+```
+
+### Interview Questions
+
+**Q50. Why do we copy requirements.txt before app.py?**
+
+This improves layer caching. If application code changes but dependencies remain the same, Docker can reuse the dependency installation layer.
+
+**Q51. Why use 0.0.0.0 in Flask?**
+
+It allows the application to listen on all container network interfaces.
+
+**Q52. Why use python:3.12-slim?**
+
+It provides a smaller Python runtime image than many full Python base images.
+
+---
+
+# 16. Multi-Stage Docker Build
+
+Multi-stage builds reduce the size of production images by separating build and runtime dependencies.
+
+### Dockerfile
+
+```dockerfile
+# Stage 1: Builder
+FROM python:3.12 AS builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir \
+    --prefix=/install \
+    -r requirements.txt
+
+# Stage 2: Production
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+
+COPY app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+```
+
+### Build
+
+```bash
+docker build -t flask-multistage:v1 .
+```
+
+### Interview Questions
+
+**Q53. What are the advantages of multi-stage builds?**
+
+- Smaller final images.
+- Reduced attack surface.
+- Separation of build and runtime dependencies.
+- Better image management.
+
+---
+
+# 17. Docker Compose Flask + MySQL Project
+
+## Project Structure
+
+```text
+flask-mysql/
+│
+├── app/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── docker-compose.yml
+└── .env
+```
+
+### docker-compose.yml
+
+```yaml
+services:
+
+  web:
+    build: ./app
+    container_name: flask-web
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: appuser
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: appdb
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.4
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+### .env
+
+```env
+MYSQL_ROOT_PASSWORD=change-this-root-password
+DB_PASSWORD=change-this-app-password
+```
+
+Do not commit real credentials or the `.env` file to GitHub.
+
+### Start services
+
+```bash
+docker compose up -d --build
+```
+
+### Check services
+
+```bash
+docker compose ps
+```
+
+### Display logs
+
+```bash
+docker compose logs -f
+```
+
+### Stop services
+
+```bash
+docker compose down
+```
+
+### Interview Questions
+
+**Q54. Why do we use service names instead of IP addresses?**
+
+Docker Compose provides internal DNS resolution for services on the same network.
+
+**Q55. Why use named volumes for MySQL?**
+
+They preserve database data independently of container lifecycle.
+
+**Q56. Does depends_on guarantee that MySQL is ready?**
+
+Basic depends_on controls startup ordering. A health-check condition can wait for MySQL to become healthy, but the application should still implement database connection retries.
+
+---
+
+# 18. Environment Variables
+
+Environment variables allow application configuration to be passed at runtime.
+
+### Example .env
+
+```env
+APP_ENV=production
+APP_PORT=5000
+DB_HOST=db
+DB_PORT=3306
+DB_NAME=appdb
+```
+
+### Pass variables during container startup
+
+```bash
+docker run -d \
+  --name env-app \
+  -p 5000:5000 \
+  -e APP_ENV=production \
+  python-flask:v1
+```
+
+### Load variables from file
+
+```bash
+docker run -d \
+  --name env-app \
+  --env-file .env \
+  python-flask:v1
+```
+
+### Interview Question
+
+**Q57. Difference between ARG and ENV?**
+
+ARG is a build-time variable.
+
+ENV is an environment variable available to the container at runtime unless overridden.
+
+Do not use either as a secure way to store passwords or API keys in image metadata.
+
+---
+
+# 19. Docker HEALTHCHECK
+
+Health checks monitor application health inside containers.
+
+### Dockerfile Example
+
+```dockerfile
+FROM nginx:alpine
+
+HEALTHCHECK --interval=30s \
+  --timeout=5s \
+  --start-period=10s \
+  --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1/ || exit 1
+```
+
+### Build
+
+```bash
+docker build -t nginx-health:v1 .
+```
+
+### Run
+
+```bash
+docker run -d \
+  --name health-app \
+  -p 8080:80 \
+  nginx-health:v1
+```
+
+### Check health
+
+```bash
+docker ps
+
+docker inspect health-app
+```
+
+### Interview Questions
+
+**Q58. What is the difference between running and healthy?**
+
+Running means the main container process is running.
+
+Healthy means the configured health check is passing.
+
+**Q59. Does Docker automatically restart unhealthy containers?**
+
+No. Health checks report status. Restart policies respond to process termination, not merely an unhealthy status.
+
+---
+
+# 20. Docker Restart Policies
+
+| Policy | Description |
+|---|---|
+| no | Do not automatically restart |
+| on-failure | Restart after non-zero exit |
+| always | Always restart after termination |
+| unless-stopped | Restart unless manually stopped |
+
+### Example
+
+```bash
+docker run -d \
+  --restart unless-stopped \
+  --name web \
+  nginx
+```
+
+### Update existing container
+
+```bash
+docker update --restart unless-stopped web
+```
+
+### Interview Question
+
+**Q60. Difference between always and unless-stopped?**
+
+Always restarts the container after termination, including after Docker daemon restart.
+
+Unless-stopped respects an explicit manual stop across daemon restarts.
+
+---
+
+# 21. Docker Compose Secrets
+
+Secrets allow sensitive values to be mounted into containers as files.
+
+### Example
+
+```yaml
+services:
+  app:
+    image: nginx:alpine
+    secrets:
+      - db_password
+
+secrets:
+  db_password:
+    file: ./db_password.txt
+```
+
+Secret location inside the container:
+
+```text
+/run/secrets/db_password
+```
+
+Important: File-backed Compose secrets require appropriate host file permissions and are not equivalent to an enterprise secrets manager.
+
+---
+
+# 22. Scenario-Based Docker Interview Questions
+
+This section covers real-time production troubleshooting scenarios.
+
+## Scenario 1: Container is exiting immediately
+
+**Question:** Your application container starts and exits within a few seconds. How will you troubleshoot?
+
+### Commands
+
+```bash
+docker ps -a
+
+docker logs container_name
+
+docker inspect container_name
+
+docker inspect -f '{{.State.ExitCode}}' container_name
+```
+
+### Possible Root Causes
+
+- Application crash.
+- Incorrect CMD or ENTRYPOINT.
+- Missing environment variables.
+- Database connection failure.
+- Incorrect startup configuration.
+
+### Solution
+
+Analyze logs, identify the root cause, fix the configuration and redeploy.
+
+## Scenario 2: Application is not accessible
+
+**Question:** Container is running, but the application is not accessible through the browser.
+
+### Commands
+
+```bash
+docker ps
+
+docker port container_name
+
+docker logs container_name
+
+docker inspect container_name
+
+curl http://localhost:8080
+```
+
+### Possible Causes
+
+- Incorrect port mapping.
+- Application listening only on localhost.
+- Host firewall restrictions.
+- Cloud security group or NSG restrictions.
+
+### Solution
+
+Correct the port mapping, application binding address and network access rules.
+
+## Scenario 3: Flask cannot connect to MySQL
+
+**Question:** Flask application is running, but it cannot connect to the MySQL database.
+
+### Commands
+
+```bash
+docker ps
+
+docker logs mysql-db
+
+docker network ls
+
+docker network inspect app-network
+
+docker exec -it flask-web env
+```
+
+### Possible Causes
+
+- Incorrect database hostname.
+- Wrong credentials.
+- Containers are on different networks.
+- Database not ready.
+- Incorrect port configuration.
+
+### Solution
+
+Use a shared user-defined bridge network and the service name `db` as the hostname.
+
+## Scenario 4: Database data disappears
+
+**Question:** MySQL container was removed and database data disappeared.
+
+### Commands
+
+```bash
+docker volume ls
+
+docker inspect mysql-db
+```
+
+### Root Cause
+
+Database data was stored in the container writable layer.
+
+### Solution
+
+Use a named volume:
+
+```bash
+docker volume create mysql-data
+```
+
+```bash
+docker run -d \
+  --name mysql-db \
+  -e MYSQL_ROOT_PASSWORD=StrongPassword \
+  -v mysql-data:/var/lib/mysql \
+  mysql:8.4
+```
+
+## Scenario 5: Docker image is too large
+
+**Question:** Your Docker image is 2 GB. How will you reduce its size?
+
+### Commands
+
+```bash
+docker images
+
+docker history myapp:v1
+```
+
+### Possible Causes
+
+- Large base image.
+- Unnecessary dependencies.
+- Missing .dockerignore.
+- Build dependencies included in production image.
+- Package caches.
+
+### Solution
+
+- Use minimal trusted base images.
+- Implement multi-stage builds.
+- Use .dockerignore.
+- Remove unnecessary packages.
+- Optimize Dockerfile layer caching.
+
+## Scenario 6: Container consuming high CPU
+
+**Question:** One container is consuming 95% CPU.
+
+### Commands
+
+```bash
+docker stats
+
+docker top container_name
+
+docker inspect container_name
+
+docker logs --tail 100 container_name
+```
+
+### Possible Causes
+
+- Infinite loops.
+- Heavy background jobs.
+- High request volume.
+- Inefficient application code.
+
+### Solution
+
+Identify the CPU-intensive process, optimize the application and apply CPU limits where required.
+
+## Scenario 7: Container consuming high memory
+
+**Question:** Your container is getting killed due to high memory usage.
+
+### Commands
+
+```bash
+docker stats
+
+docker inspect container_name
+```
+
+### Possible Causes
+
+- Memory leak.
+- Excessive caching.
+- Too many workers.
+- Large in-memory objects.
+
+### Solution
+
+Identify the memory-intensive process, fix application memory usage and configure suitable memory limits.
+
+## Scenario 8: Docker build is slow
+
+**Question:** Docker image takes 10 minutes to build.
+
+### Possible Causes
+
+- Large build context.
+- Incorrect instruction ordering.
+- Dependency installation repeated unnecessarily.
+- Missing build cache.
+
+### Solution
+
+Copy dependency files before application source files.
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "app.py"]
+```
+
+Create .dockerignore:
+
+```text
+.git/
+__pycache__/
+*.pyc
+node_modules/
+venv/
+.env
+```
+
+## Scenario 9: Container cannot resolve another container hostname
+
+**Question:** Your web container cannot resolve database hostname `db`.
+
+### Commands
+
+```bash
+docker network ls
+
+docker network inspect app-network
+
+docker inspect web
+
+docker inspect db
+
+docker exec web getent hosts db
+```
+
+### Solution
+
+Ensure both containers are connected to the same user-defined network and use the correct container or service name.
+
+## Scenario 10: Port already allocated
+
+**Question:** You receive:
+
+```text
+Bind for 0.0.0.0:8080 failed:
+port is already allocated
+```
+
+### Commands
+
+```bash
+docker ps
+
+docker ps --format "table {{.Names}}\t{{.Ports}}"
+
+sudo ss -lntp | grep 8080
+```
+
+### Solution
+
+Stop the conflicting service if appropriate or use another host port.
+
+```bash
+docker run -d -p 8081:80 nginx
+```
+
+## Scenario 11: Container is unhealthy
+
+**Question:** Container is running but unhealthy.
+
+### Commands
+
+```bash
+docker ps
+
+docker inspect container_name
+
+docker inspect -f '{{json .State.Health}}' container_name
+
+docker logs container_name
+```
+
+### Possible Causes
+
+- Incorrect health-check command.
+- Application not ready.
+- Wrong health endpoint.
+- Application dependency failure.
+
+### Solution
+
+Correct the health-check command or resolve the application failure.
+
+## Scenario 12: Container cannot access the internet
+
+**Question:** Docker container cannot access external APIs.
+
+### Commands
+
+```bash
+docker network ls
+
+docker inspect container_name
+
+docker exec container_name cat /etc/resolv.conf
+
+docker exec container_name getent hosts google.com
+```
+
+### Possible Causes
+
+- DNS failure.
+- Host network issue.
+- Firewall restrictions.
+- Proxy misconfiguration.
+- Docker bridge/NAT issue.
+
+### Solution
+
+Check host connectivity, DNS, proxy, routing and firewall configuration.
+
+## Scenario 13: Container restarts repeatedly
+
+**Question:** Container restarts every few seconds.
+
+### Commands
+
+```bash
+docker ps -a
+
+docker logs container_name
+
+docker inspect container_name
+
+docker events
+```
+
+### Possible Causes
+
+- Application crashes.
+- Incorrect startup command.
+- Missing configuration.
+- Database unavailable.
+
+### Solution
+
+Fix the original application failure rather than relying only on restart policies.
+
+## Scenario 14: Docker host disk usage is 100%
+
+**Question:** Production Linux server is running out of disk space.
+
+### Commands
+
+```bash
+df -h
+
+docker system df
+
+docker system df -v
+
+docker ps -a
+
+docker images
+
+docker volume ls
+```
+
+### Check container log storage
+
+```bash
+sudo du -sh /var/lib/docker/containers/*
+```
+
+### Solution
+
+- Remove verified unused images.
+- Remove unnecessary stopped containers.
+- Review unused volumes.
+- Configure log rotation.
+- Check database storage.
+- Expand disk if necessary.
+
+## Scenario 15: Docker image contains critical vulnerabilities
+
+**Question:** Security scanning reports critical vulnerabilities.
+
+### Commands
+
+```bash
+trivy image myapp:v1
+
+docker scout cves myapp:v1
+```
+
+### Solution
+
+- Identify vulnerable dependencies.
+- Update base image.
+- Update vulnerable packages.
+- Rebuild image.
+- Scan again.
+- Test application.
+- Deploy the fixed image.
+
+## Scenario 16: Deploy a new application version
+
+**Question:** Application version changes from v1 to v2. How will you deploy it without losing data?
+
+### Build new image
+
+```bash
+docker build -t myapp:v2 .
+```
+
+### Replace container
+
+```bash
+docker stop myapp
+
+docker rm myapp
+
+docker run -d \
+  --name myapp \
+  -p 8080:5000 \
+  -v app-data:/data \
+  myapp:v2
+```
+
+### Rollback
+
+```bash
+docker stop myapp
+
+docker rm myapp
+
+docker run -d \
+  --name myapp \
+  -p 8080:5000 \
+  -v app-data:/data \
+  myapp:v1
+```
+
+Note: This is a basic single-container replacement, not a zero-downtime deployment. Production zero-downtime deployments require multiple instances, load balancing and controlled traffic switching.
+
+## Scenario 17: Minimal container has no debugging tools
+
+**Question:** Your container does not contain curl, ping or Bash.
+
+### Commands
+
+```bash
+docker inspect app
+
+docker logs app
+
+docker stats app
+
+docker top app
+```
+
+Run a diagnostic container:
+
+```bash
+docker run --rm -it \
+  --network app-network \
+  busybox sh
+```
+
+Inside:
+
+```bash
+nslookup db
+
+wget -qO- http://web:5000/health
+```
+
+## Scenario 18: Permission denied
+
+**Question:** Application cannot write to a mounted directory.
+
+### Commands
+
+```bash
+docker exec -it app id
+
+docker inspect app
+
+ls -ld ./data
+```
+
+### Possible Causes
+
+- Host and container user ID mismatch.
+- Incorrect ownership.
+- Insufficient permissions.
+- SELinux restrictions.
+
+### Solution
+
+Set appropriate ownership and permissions. Avoid using chmod 777 as a permanent fix.
+
+## Scenario 19: Docker application cannot connect to AWS RDS
+
+**Question:** Docker application on EC2 cannot connect to Amazon RDS.
+
+### Troubleshooting
+
+1. Verify RDS endpoint.
+2. Verify credentials.
+3. Check VPC connectivity.
+4. Check EC2 security group.
+5. Check RDS security group.
+6. Verify port 3306.
+7. Verify environment variables.
+8. Test DNS and TCP connectivity.
+
+### Commands
+
+```bash
+docker exec app getent hosts your-rds-endpoint
+
+docker exec -it app sh
+```
+
+If a suitable TCP client is installed:
+
+```bash
+nc -vz your-rds-endpoint 3306
+```
+
+### Important Security Point
+
+Allow MySQL port 3306 from the appropriate EC2 security group instead of opening the database to the public internet.
+
+## Scenario 20: Implement Docker CI/CD
+
+**Question:** Developer pushes code to GitHub. How do you automatically build, scan and deploy the Docker image?
+
+### Workflow
+
+1. Developer pushes code.
+2. GitHub Actions pipeline starts.
+3. Build Docker image.
+4. Execute unit tests.
+5. Scan image using Trivy.
+6. Push image to ECR, ACR or Docker Hub.
+7. Deploy application.
+8. Perform health checks.
+9. Roll back if deployment fails.
+
+### Basic GitHub Actions Workflow
+
+Create:
+
+`.github/workflows/docker-ci.yml`
+
+```yaml
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t myapp:${{ github.sha }} .
+
+      - name: Test image
+        run: |
+          docker run -d \
+            --name test-app \
+            -p 5000:5000 \
+            myapp:${{ github.sha }}
+
+          sleep 5
+
+          docker logs test-app
+
+          docker rm -f test-app
+```
+
+This is a basic demonstration. A production pipeline should include proper test assertions, vulnerability scanning, authenticated registry publishing and deployment validation.
+
+---
+
+# 23. Advanced Docker Interview Questions
+
+**Q61. Explain Docker architecture.**
+
+Docker uses a client-server architecture consisting of Docker Client, Docker Daemon, Registry, containerd and runc.
+
+**Q62. What happens internally when you execute docker run nginx?**
+
+1. Docker client sends a request to Docker daemon.
+2. Docker checks whether the image exists.
+3. If necessary, Docker pulls the image.
+4. Docker creates the container filesystem.
+5. Docker configures networking and resource settings.
+6. Container runtime starts the container process.
+
+**Q63. What are Linux namespaces?**
+
+Namespaces provide isolation for processes and system resources.
+
+Types:
+
+- PID namespace.
+- Network namespace.
+- Mount namespace.
+- IPC namespace.
+- UTS namespace.
+- User namespace.
+- Cgroup namespace.
+
+**Q64. What are cgroups?**
+
+Control groups manage and limit resource consumption such as CPU and memory.
+
+**Q65. What is Docker socket exposure?**
+
+The Docker socket, commonly `/var/run/docker.sock`, allows clients to communicate with the Docker daemon. Giving an untrusted container access can provide extensive control over the host.
+
+**Q66. Why should we avoid the latest tag in production?**
+
+The latest tag is mutable and does not guarantee a specific image version. Use controlled version tags and preferably immutable image digests.
+
+**Q67. What is Docker Swarm?**
+
+Docker Swarm is Docker's native container orchestration system.
+
+### Docker Swarm Commands
+
+```bash
+docker swarm init
+
+docker node ls
+
+docker service create \
+  --name web \
+  --replicas 3 \
+  -p 8080:80 \
+  nginx
+
+docker service ls
+
+docker service scale web=5
+
+docker service inspect web
+
+docker service logs web
+
+docker service rm web
+```
+
+**Q68. What is the difference between Docker Swarm and Kubernetes?**
+
+Docker Swarm provides simpler native Docker orchestration.
+
+Kubernetes provides a more extensive container orchestration platform with advanced scheduling, service discovery, scaling, configuration management and ecosystem integrations.
+
+**Q69. What is the difference between Docker and Kubernetes?**
+
+Docker is a containerization platform and ecosystem. Kubernetes is a container orchestration platform.
+
+They work together and are not direct replacements.
+
+---
+
+# 24. Practical Interview Assignments
+
+Complete these assignments on an Ubuntu or Amazon Linux EC2 instance.
+
+| Lab | Assignment |
+|---|---|
+| 1 | Install and verify Docker |
+| 2 | Run an Nginx container |
+| 3 | Build a Python application image |
+| 4 | Create a custom Docker network |
+| 5 | Implement persistent volumes |
+| 6 | Deploy Flask + MySQL using Compose |
+| 7 | Configure Docker health checks |
+| 8 | Implement multi-stage builds |
+| 9 | Scan images using Trivy |
+| 10 | Create a GitHub Actions CI pipeline |
+| 11 | Troubleshoot high CPU and memory |
+| 12 | Deploy a Dockerized application on AWS EC2 |
+
+### Recommended Practice Environment
+
+- Ubuntu Linux or Amazon Linux.
+- Docker Engine.
+- Docker Compose.
+- Git and GitHub.
+- Python and Flask.
+- MySQL.
+- Trivy.
+- AWS EC2 (optional).
+- GitHub Actions.
+
+---
+
+# 25. Docker Interview Preparation – 15-Day Roadmap
+
+| Day | Topics | Practical |
+|---|---|---|
+| 1 | Docker fundamentals | Install and run containers |
+| 2 | Container commands | Lifecycle and troubleshooting |
+| 3 | Docker images | Build, tag, push and pull |
+| 4 | Dockerfile | Python application |
+| 5 | Dockerfile instructions | CMD, ENTRYPOINT, ARG, ENV |
+| 6 | Multi-stage builds | Image optimization |
+| 7 | Docker volumes | Persistent storage |
+| 8 | Docker networking | Container communication |
+| 9 | Docker Compose | Flask + MySQL |
+| 10 | Health checks | Health and restart policies |
+| 11 | Resource management | CPU and memory |
+| 12 | Docker security | Non-root, scanning and secrets |
+| 13 | Registry and CI/CD | GitHub Actions |
+| 14 | Production troubleshooting | 20 real-time scenarios |
+| 15 | Mock interview | Theory, commands and practical |
+
+---
+
+# Final Interview Preparation Checklist
+
+Before attending a Docker interview, make sure you can independently perform these tasks:
+
+- [ ] Explain Docker architecture.
+- [ ] Explain Docker image and container differences.
+- [ ] Execute all important Docker commands.
+- [ ] Write a Dockerfile from scratch.
+- [ ] Explain CMD and ENTRYPOINT.
+- [ ] Build a Python application image.
+- [ ] Create and manage Docker volumes.
+- [ ] Configure Docker networking.
+- [ ] Deploy Flask and MySQL using Docker Compose.
+- [ ] Implement health checks.
+- [ ] Optimize image size using multi-stage builds.
+- [ ] Configure resource limits.
+- [ ] Scan Docker images for vulnerabilities.
+- [ ] Troubleshoot container failures.
+- [ ] Implement a Docker CI/CD pipeline.
+- [ ] Deploy Docker applications on AWS or Azure.
+
+## Recommended Interview Strategy
+
+For every technical question, structure your answer using five steps:
+
+1. **Definition:** Explain the concept.
+2. **Purpose:** Explain why it is used.
+3. **Command:** Demonstrate the relevant command.
+4. **Practical Example:** Explain how it works in a project.
+5. **Real-Time Scenario:** Explain where you would use it in production.
+
+This approach helps demonstrate both theoretical understanding and hands-on experience.
+
+---
+
+**Happy Learning!**
+
+**Repository:** Docker Interview Preparation
+
+**Content:** Commands | Configuration Files | Practical Projects | Troubleshooting | Scenario-Based Questions
+
+**Learning Goal:** Become confident in Docker technical interviews and real-time DevOps tasks.
+
